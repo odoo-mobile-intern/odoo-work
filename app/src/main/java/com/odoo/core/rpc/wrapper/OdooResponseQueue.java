@@ -19,7 +19,7 @@
  */
 package com.odoo.core.rpc.wrapper;
 
-import com.odoo.core.rpc.listeners.IOdooResponse;
+import com.odoo.core.rpc.listeners.OdooResponse;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,17 +28,17 @@ import java.util.Queue;
 
 public class OdooResponseQueue {
     public static final String TAG = OdooResponseQueue.class.getSimpleName();
-    private Map<String, Queue<IOdooResponse>> mOdooResponseQueue = new HashMap<>();
+    private Map<String, Queue<OdooResponse>> mOdooResponseQueue = new HashMap<>();
 
-    public void add(int id, IOdooResponse callback) {
+    public void add(int id, OdooResponse callback) {
         if (!mOdooResponseQueue.containsKey("queue_" + id)) {
-            Queue<IOdooResponse> response = new LinkedList<>();
+            Queue<OdooResponse> response = new LinkedList<>();
             response.add(callback);
             mOdooResponseQueue.put("queue_" + id, response);
         }
     }
 
-    public IOdooResponse get(int id) {
+    public OdooResponse get(int id) {
         if (mOdooResponseQueue.containsKey("queue_" + id)) {
             return mOdooResponseQueue.get("queue_" + id).poll();
         }

@@ -21,8 +21,10 @@ package com.odoo.core.rpc.listeners;
 
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 
-public interface IOdooResponse {
-    void onResponse(OdooResult response);
+public abstract class OdooResponse {
+    public abstract void onResponse(OdooResult response);
 
-    void onError(OdooError error);
+    public void onError(OdooError error) {
+        // override by calling method if needed
+    }
 }

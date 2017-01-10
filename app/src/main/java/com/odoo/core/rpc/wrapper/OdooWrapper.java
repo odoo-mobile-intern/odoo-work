@@ -46,15 +46,15 @@ import com.odoo.core.rpc.helper.OdooUserCurrency;
 import com.odoo.core.rpc.helper.OdooVersion;
 import com.odoo.core.rpc.helper.utils.OdooLog;
 import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
-import com.odoo.core.rpc.helper.utils.gson.OdooResponse;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.rpc.http.OdooSafeClient;
 import com.odoo.core.rpc.listeners.IDatabaseListListener;
 import com.odoo.core.rpc.listeners.IModuleInstallListener;
-import com.odoo.core.rpc.listeners.OdooConnectionListener;
 import com.odoo.core.rpc.listeners.IOdooLoginCallback;
-import com.odoo.core.rpc.listeners.IOdooResponse;
+import com.odoo.core.rpc.listeners.OdooResponse;
+import com.odoo.core.rpc.listeners.OdooConnectionListener;
 import com.odoo.core.rpc.listeners.OdooError;
+import com.odoo.core.rpc.listeners.OdooSignUpCallback;
 import com.odoo.core.rpc.listeners.OdooSyncResponse;
 import com.odoo.core.support.OUser;
 
@@ -107,11 +107,11 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         if (serverURL != null) {
             OdooLog.v("Connecting to " + serverURL);
             if (!synchronizedTask) {
-                getVersionInfo(new IOdooResponse() {
+                getVersionInfo(new OdooResponse() {
                     @Override
                     public void onResponse(OdooResult response) {
                         if (mVersion.getVersionNumber() < 10) {
-                            getSessionInfo(new IOdooResponse() {
+                            getSessionInfo(new OdooResponse() {
                                 @Override
                                 public void onResponse(OdooResult response) {
                                     if (mOdooConnectionListener != null) {
@@ -155,7 +155,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
     }
 
     private void newJSONPOSTRequest(final String url, JSONObject params,
-                                    IOdooResponse odooResponse, OdooSyncResponse backResponse) {
+                                    OdooResponse odooResponse, OdooSyncResponse backResponse) {
         OdooLog.d("REQUEST URL : " + url);
         final JSONObject postData = createRequestWrapper(params, odooResponse);
         OdooLog.d("POST DATA: " + postData);
@@ -190,7 +190,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
                                 "Odoo.DEFAULT_MAX_RETRIES");
                     }
                     try {
-                        IOdooResponse response = responseQueue.get(postData.getInt("id"));
+                        OdooResponse response = responseQueue.get(postData.getInt("id"));
                         if (response != null) {
                             response.onError(odooError);
                             responseQueue.remove(postData.getInt("id"));
@@ -238,7 +238,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return newHeaders;
     }
 
-    public void requestController(String fullURL, JSONObject data, IOdooResponse callback) {
+    public void requestController(String fullURL, JSONObject data, OdooResponse callback) {
         requestController(fullURL, data, callback, null);
     }
 
@@ -248,12 +248,12 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    private void requestController(String fullURL, JSONObject data, IOdooResponse callback,
+    private void requestController(String fullURL, JSONObject data, OdooResponse callback,
                                    OdooSyncResponse backResponse) {
         newJSONPOSTRequest(fullURL, data, callback, backResponse);
     }
 
-    private JSONObject createRequestWrapper(JSONObject params, IOdooResponse callback) {
+    private JSONObject createRequestWrapper(JSONObject params, OdooResponse callback) {
         JSONObject requestData = new JSONObject();
         try {
             int randomId = getRequestID();
@@ -288,13 +288,13 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return version;
     }
 
-    public void getVersionInfo(IOdooResponse res) {
+    public void getVersionInfo(OdooResponse res) {
         getVersionInfo(res, null);
     }
 
-    private void getVersionInfo(final IOdooResponse res, OdooSyncResponse backResponse) {
+    private void getVersionInfo(final OdooResponse res, OdooSyncResponse backResponse) {
         String url = serverURL + "/web/webclient/version_info";
-        newJSONPOSTRequest(url, null, new IOdooResponse() {
+        newJSONPOSTRequest(url, null, new OdooResponse() {
             @Override
             public void onResponse(OdooResult response) {
                 try {
@@ -323,13 +323,13 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return session;
     }
 
-    public void getSessionInfo(IOdooResponse callback) {
+    public void getSessionInfo(OdooResponse callback) {
         getSessionInfo(callback, null);
     }
 
-    private void getSessionInfo(final IOdooResponse callback, OdooSyncResponse backResponse) {
+    private void getSessionInfo(final OdooResponse callback, OdooSyncResponse backResponse) {
         String url = serverURL + "/web/session/get_session_info";
-        newJSONPOSTRequest(url, null, new IOdooResponse() {
+        newJSONPOSTRequest(url, null, new OdooResponse() {
             @Override
             public void onResponse(OdooResult response) {
                 odooSession = OdooSession.parseSessionInfo(response);
@@ -364,7 +364,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
                 if (callback != null) {
                     callback.onDatabasesLoad(Collections.singletonList(odooSession.getDb()));
                 } else {
-                    OdooResponse response = new OdooResponse();
+                    com.odoo.core.rpc.helper.utils.gson.OdooResponse response = new com.odoo.core.rpc.helper.utils.gson.OdooResponse();
                     OdooResult result = new OdooResult();
                     result.put("result", Collections.singletonList(odooSession.getDb()));
                     response.result = result;
@@ -378,7 +378,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
                     if (callback != null) {
                         callback.onDatabasesLoad(Collections.singletonList(parts[0]));
                     } else {
-                        OdooResponse response = new OdooResponse();
+                        com.odoo.core.rpc.helper.utils.gson.OdooResponse response = new com.odoo.core.rpc.helper.utils.gson.OdooResponse();
                         OdooResult result = new OdooResult();
                         result.put("result", Collections.singletonList(parts[0]));
                         response.result = result;
@@ -400,7 +400,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
                         url += "/web/database/get_list";
                         params.put("context", new JSONObject());
                     }
-                    newJSONPOSTRequest(url, params, new IOdooResponse() {
+                    newJSONPOSTRequest(url, params, new OdooResponse() {
                         @Override
                         public void onResponse(OdooResult response) {
                             List<String> dbs = response.getArray("result");
@@ -428,6 +428,41 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
                     }, backResponse);
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void signUp(String name, final String login, final String password,
+                       final OdooSignUpCallback callback) {
+        String url = serverURL + "/web/user/signup";
+        try {
+            JSONObject params = new JSONObject();
+            params.put("name", name);
+            params.put("email", login);
+            params.put("password", password);
+            newJSONPOSTRequest(url, params, new OdooResponse() {
+                @Override
+                public void onResponse(OdooResult res) {
+                    if (res.get("uid") instanceof Boolean) {
+                        OdooError error = new OdooError("Authentication Fail", null);
+                        error.setResponseCode(Odoo.ErrorCode.AuthenticationFail.get());
+                        callback.onSignUpFail(error);
+                    } else {
+                        if (!(res.get("uid") instanceof Boolean)) {
+                            res.put("username", login); // FIX for 10.0+
+                            bindOdooSession(res);
+                            generateUserObject(login, password, res.getString("db"), callback,
+                                    null);
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(OdooError error) {
+                    if (callback != null) callback.onSignUpFail(error);
+                }
+            }, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -470,7 +505,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
             params.put("login", username);
             params.put("password", password);
             params.put("context", new JSONObject());
-            newJSONPOSTRequest(url, params, new IOdooResponse() {
+            newJSONPOSTRequest(url, params, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult res) {
                     if (res.get("uid") instanceof Boolean) {
@@ -544,7 +579,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return (T) this;
     }
 
-    public void nameSearch(String model, String query, ODomain domain, int limit, IOdooResponse callback) {
+    public void nameSearch(String model, String query, ODomain domain, int limit, OdooResponse callback) {
         nameSearch(model, query, domain, limit, callback, null);
     }
 
@@ -554,7 +589,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    private void nameSearch(String model, String query, ODomain domain, int limit, IOdooResponse callback
+    private void nameSearch(String model, String query, ODomain domain, int limit, OdooResponse callback
             , OdooSyncResponse backResponse) {
         try {
             HashMap<String, Object> kwargs = new HashMap<>();
@@ -575,11 +610,11 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return result.getInt("result");
     }
 
-    public void searchCount(String model, ODomain domain, IOdooResponse callback) {
+    public void searchCount(String model, ODomain domain, OdooResponse callback) {
         searchCount(model, domain, callback, null);
     }
 
-    private void searchCount(String model, ODomain domain, IOdooResponse callback,
+    private void searchCount(String model, ODomain domain, OdooResponse callback,
                              OdooSyncResponse backResponse) {
         try {
             JSONObject params = new JSONObject();
@@ -602,12 +637,12 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
     }
 
     public void searchRead(String model, OdooFields fields, ODomain domain,
-                           int offset, int limit, String sort, final IOdooResponse callback) {
+                           int offset, int limit, String sort, final OdooResponse callback) {
         searchRead(model, fields, domain, offset, limit, sort, callback, null);
     }
 
     private void searchRead(String model, OdooFields fields, ODomain domain,
-                            int offset, int limit, String sort, final IOdooResponse callback,
+                            int offset, int limit, String sort, final OdooResponse callback,
                             OdooSyncResponse backResponse) {
         try {
             String url = serverURL + "/web/dataset/search_read";
@@ -638,11 +673,11 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    public void executeWorkFlow(String model, int id, String signal, IOdooResponse callback) {
+    public void executeWorkFlow(String model, int id, String signal, OdooResponse callback) {
         executeWorkFlow(model, id, signal, callback, null);
     }
 
-    private void executeWorkFlow(String model, int id, String signal, IOdooResponse callback,
+    private void executeWorkFlow(String model, int id, String signal, OdooResponse callback,
                                  OdooSyncResponse backResponse) {
         String url = serverURL + "/web/dataset/exec_workflow";
         try {
@@ -675,11 +710,11 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    public void read(String model, int id, OdooFields fields, IOdooResponse callback) {
+    public void read(String model, int id, OdooFields fields, OdooResponse callback) {
         read(model, id, fields, callback, null);
     }
 
-    private void read(String model, int id, OdooFields fields, final IOdooResponse callback,
+    private void read(String model, int id, OdooFields fields, final OdooResponse callback,
                       OdooSyncResponse backResponse) {
         String url = serverURL + "/web/dataset/call_kw/" + model + "/read";
         try {
@@ -708,11 +743,11 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    public void getModelFields(String model, IOdooResponse callback) {
+    public void getModelFields(String model, OdooResponse callback) {
         getModelFields(model, callback, null);
     }
 
-    private void getModelFields(String model, IOdooResponse callback, OdooSyncResponse backResponse) {
+    private void getModelFields(String model, OdooResponse callback, OdooSyncResponse backResponse) {
         OdooFields fields = new OdooFields();
         fields.addAll(new String[]{"name", "field_description", "ttype", "model_id"});
         ODomain domain = new ODomain();
@@ -721,7 +756,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
     }
 
     public void callMethod(String model, String method, OArguments arguments,
-                           HashMap<String, Object> kwargs, IOdooResponse callback) {
+                           HashMap<String, Object> kwargs, OdooResponse callback) {
         callMethod(model, method, arguments, kwargs, null, callback, null);
     }
 
@@ -734,7 +769,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
 
     public void callMethod(String model, String method, OArguments arguments,
                            HashMap<String, Object> kwargs, HashMap<String, Object> context,
-                           IOdooResponse callback) {
+                           OdooResponse callback) {
         callMethod(model, method, arguments, kwargs, context, callback, null);
     }
 
@@ -747,7 +782,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
 
     private void callMethod(String model, String method, OArguments arguments,
                             HashMap<String, Object> kwargs, HashMap<String, Object> context,
-                            IOdooResponse callback, OdooSyncResponse backResponse) {
+                            OdooResponse callback, OdooSyncResponse backResponse) {
         String url = serverURL + "/web/dataset/call_kw";
         try {
             JSONObject params = new JSONObject();
@@ -776,11 +811,11 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    public void permRead(String model, List<Integer> ids, IOdooResponse callback) {
+    public void permRead(String model, List<Integer> ids, OdooResponse callback) {
         permRead(model, ids, callback, null);
     }
 
-    private void permRead(String model, List<Integer> ids, IOdooResponse callback, OdooSyncResponse backResponse) {
+    private void permRead(String model, List<Integer> ids, OdooResponse callback, OdooSyncResponse backResponse) {
         try {
             OArguments args = new OArguments();
             args.add(new JSONArray(ids.toString()));
@@ -796,11 +831,11 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    public void createRecord(String model, ORecordValues values, IOdooResponse callback) {
+    public void createRecord(String model, ORecordValues values, OdooResponse callback) {
         createRecord(model, values, callback, null);
     }
 
-    private void createRecord(String model, ORecordValues values, IOdooResponse callback, OdooSyncResponse backResponse) {
+    private void createRecord(String model, ORecordValues values, OdooResponse callback, OdooSyncResponse backResponse) {
         try {
             OArguments args = new OArguments();
             args.add(new JSONObject(gson.toJson(values)));
@@ -828,17 +863,17 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    public void updateRecord(String model, ORecordValues values, int id, IOdooResponse callback) {
+    public void updateRecord(String model, ORecordValues values, int id, OdooResponse callback) {
         List<Integer> ids = new ArrayList<>();
         ids.add(id);
         updateRecord(model, values, ids, callback, null);
     }
 
-    public void updateRecord(String model, ORecordValues values, List<Integer> ids, IOdooResponse callback) {
+    public void updateRecord(String model, ORecordValues values, List<Integer> ids, OdooResponse callback) {
         updateRecord(model, values, ids, callback, null);
     }
 
-    private void updateRecord(String model, ORecordValues values, List<Integer> ids, IOdooResponse callback,
+    private void updateRecord(String model, ORecordValues values, List<Integer> ids, OdooResponse callback,
                               OdooSyncResponse backResponse) {
         try {
             OArguments args = new OArguments();
@@ -868,17 +903,17 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         return validateResult(response);
     }
 
-    public void unlinkRecord(String model, int id, IOdooResponse callback) {
+    public void unlinkRecord(String model, int id, OdooResponse callback) {
         List<Integer> ids = new ArrayList<>();
         ids.add(id);
         unlinkRecord(model, ids, callback, null);
     }
 
-    public void unlinkRecord(String model, List<Integer> ids, IOdooResponse callback) {
+    public void unlinkRecord(String model, List<Integer> ids, OdooResponse callback) {
         unlinkRecord(model, ids, callback, null);
     }
 
-    private void unlinkRecord(String model, List<Integer> ids, IOdooResponse callback,
+    private void unlinkRecord(String model, List<Integer> ids, OdooResponse callback,
                               OdooSyncResponse backResponse) {
         try {
             OArguments args = new OArguments();
@@ -910,7 +945,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         fields.addAll(new String[]{"state", "name"});
         ODomain domain = new ODomain();
         domain.add("name", "=", moduleName);
-        searchRead("ir.module.module", fields, domain, 0, 0, null, new IOdooResponse() {
+        searchRead("ir.module.module", fields, domain, 0, 0, null, new OdooResponse() {
             @Override
             public void onResponse(OdooResult response) {
                 if (response.getRecords().size() > 0) {
@@ -928,7 +963,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
     }
 
     private void generateUserObject(String username, String password,
-                                    String db, final IOdooLoginCallback callback,
+                                    String db, final Object callback,
                                     final OdooSyncResponse backResponse) {
         final OUser[] users = new OUser[1];
         users[0] = new OUser();
@@ -949,16 +984,22 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
             users[0] = parseUserObject(users[0], result);
             backResponse.setObject(users[0]);
         } else {
-            read("res.users", users[0].getUserId(), fields, new IOdooResponse() {
+            read("res.users", users[0].getUserId(), fields, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
                     users[0] = parseUserObject(users[0], response);
-                    callback.onLoginSuccess(mOdoo, users[0]);
+                    if (callback instanceof IOdooLoginCallback)
+                        ((IOdooLoginCallback) callback).onLoginSuccess(mOdoo, users[0]);
+                    if (callback instanceof OdooSignUpCallback)
+                        ((OdooSignUpCallback) callback).onSignUpSuccess(users[0]);
                 }
 
                 @Override
                 public void onError(OdooError error) {
-                    callback.onLoginFail(error);
+                    if (callback instanceof IOdooLoginCallback)
+                        ((IOdooLoginCallback) callback).onLoginFail(error);
+                    if (callback instanceof OdooSignUpCallback)
+                        ((OdooSignUpCallback) callback).onSignUpFail(error);
                 }
             });
         }
@@ -1006,10 +1047,10 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
     @Override
     public void onResponse(JSONObject response) {
         OdooLog.d("RESPONSE:" + response);
-        OdooResponse responseMap = parseToResponse(response);
+        com.odoo.core.rpc.helper.utils.gson.OdooResponse responseMap = parseToResponse(response);
         if (responseMap != null) {
             int id = responseMap.id;
-            IOdooResponse odooResponse = responseQueue.get(id);
+            OdooResponse odooResponse = responseQueue.get(id);
             if (odooResponse != null) {
                 if (responseMap.error != null) {
                     OdooError error = OdooError.parse(responseMap.error);
@@ -1038,7 +1079,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         }
     }
 
-    private OdooResponse parseToResponse(JSONObject response) {
+    private com.odoo.core.rpc.helper.utils.gson.OdooResponse parseToResponse(JSONObject response) {
         try {
             // Fixed for direct array in result
             // It will add one more key to result:(result:[] become result:{"result": []});
@@ -1056,7 +1097,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         } catch (Exception e) {
             OdooLog.e(e, e.getMessage());
         }
-        return gson.fromJson(response.toString(), OdooResponse.class);
+        return gson.fromJson(response.toString(), com.odoo.core.rpc.helper.utils.gson.OdooResponse.class);
     }
 
     private String getDBPrefix(String host) {
