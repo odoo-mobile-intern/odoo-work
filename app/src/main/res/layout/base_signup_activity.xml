@@ -4,60 +4,78 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/default_16dp"
+    android:paddingLeft="48dp"
+    android:paddingRight="48dp"
+    android:paddingTop="@dimen/default_16dp">
 
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/odoo_small"
+        android:tint="@color/colorWhite" />
 
-    <TextView
-        android:text="Odoo Work"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textTitle"
-        android:textColor="@color/colorTextIcon"
-        android:gravity="center"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:layout_marginBottom="8dp"
+        android:textColorHint="#77FFFFFF">
 
-    <EditText
+        <EditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_name"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="#77FFFFFF" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/txtName"
-        android:hint="Your Name"
-        android:textColor="@color/colorPrimaryText"
-        android:padding="@dimen/activity_padding"
-        />
+        android:layout_marginBottom="8dp"
+        android:textColorHint="#77FFFFFF">
 
-    <EditText
+        <EditText
+            android:id="@+id/edit_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="#77FFFFFF" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/txtEmail"
-        android:hint="Your Email"
-        android:textColor="@color/colorPrimaryText"
-        android:padding="@dimen/activity_padding" />
+        android:layout_marginBottom="8dp"
+        android:textColorHint="#77FFFFFF">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/txtPass"
-        android:hint="Password"
-        android:textColor="@color/colorPrimaryText"
-        android:padding="@dimen/activity_padding" />
+        <EditText
+            android:id="@+id/edit_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="#77FFFFFF" />
+
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/btnSignup"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_16dp"
+        android:paddingLeft="@dimen/default_16dp"
+        android:paddingRight="@dimen/default_16dp"
         android:text="@string/label_sign_up"
         android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/colorTextIcon"
-        android:background="@color/colorAccent"
-        android:padding="@dimen/activity_padding" />
-
+        android:textColor="@color/colorPrimaryExtraDark" />
 </LinearLayout>
