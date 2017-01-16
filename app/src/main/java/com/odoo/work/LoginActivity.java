@@ -1,5 +1,6 @@
 package com.odoo.work;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.EditText;
 
+import com.odoo.config.AppConfig;
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
 import com.odoo.core.rpc.listeners.IOdooLoginCallback;
@@ -15,12 +17,14 @@ import com.odoo.core.rpc.listeners.OdooConnectionListener;
 import com.odoo.core.rpc.listeners.OdooError;
 import com.odoo.core.support.OUser;
 import com.odoo.work.core.support.OdooActivity;
+import com.odoo.work.core.support.account.DeviceAccountUtils;
 
 
 public class LoginActivity extends OdooActivity implements View.OnClickListener,
         IOdooLoginCallback {
+    public static final int REQUEST_NEW_SIGNUP = 123;
     private EditText editEmail, editPassword;
-    private Odoo odoo;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,16 +42,29 @@ public class LoginActivity extends OdooActivity implements View.OnClickListener,
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnSignup:
-                startActivity(new Intent(this, SignUpActivity.class));
+                startActivityForResult(new Intent(this, SignUpActivity.class), REQUEST_NEW_SIGNUP);
                 break;
             case R.id.btnSignin:
                 if (isValid()) {
                     try {
-                        odoo = Odoo.createInstance(this, "http://192.168.199.101:8069");
+                        progressDialog = new ProgressDialog(this);
+                        progressDialog.setCancelable(false);
+                        progressDialog.setMessage(getString(R.string.msg_authenticating));
+                        progressDialog.show();
+                        Odoo odoo = Odoo.createInstance(this, AppConfig.HOST_URL);
                         odoo.setOnConnect(new OdooConnectionListener() {
                             @Override
                             public void onConnect(Odoo odoo) {
-                                odoo.authenticate(editEmail.toString(), editPassword.toString(), "odoo-work", LoginActivity.this);
+                                odoo.authenticate(editEmail.getText().toString(), editPassword.getText().toString(),
+                                        AppConfig.HOST_DB, LoginActivity.this);
+                            }
+
+                            @Override
+                            public void onError(OdooError error) {
+                                super.onError(error);
+                                progressDialog.dismiss();
+                                Snackbar.make(getContentView(), error.getMessage(), Snackbar.LENGTH_SHORT)
+                                        .show();
                             }
                         });
                     } catch (OdooVersionException e) {
@@ -80,12 +97,29 @@ public class LoginActivity extends OdooActivity implements View.OnClickListener,
 
     @Override
     public void onLoginSuccess(Odoo odoo, OUser user) {
-        //TODO: Create account.
+        progressDialog.dismiss();
+        if (DeviceAccountUtils.get(this).createAccount(user)) {
+            startSplashScreen();
+        }
     }
 
     @Override
     public void onLoginFail(OdooError error) {
+        progressDialog.dismiss();
         Snackbar.make(getContentView(), R.string.error_login_failed, BaseTransientBottomBar.LENGTH_LONG)
                 .show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == REQUEST_NEW_SIGNUP) {
+            startSplashScreen();
+        }
+    }
+
+    private void startSplashScreen() {
+        startActivity(new Intent(this, SplashScreen.class));
+        finish();
     }
 }
