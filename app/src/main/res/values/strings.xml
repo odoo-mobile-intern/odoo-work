@@ -7,4 +7,6 @@
     <string name="error_enter_name">Enter Name</string>
     <string name="error_enter_email">Enter Email</string>
     <string name="error_enter_password">Enter Password</string>
+    <string name="label_forgot_password">Forgot Password?</string>
+    <string name="error_login_failed">Invalid username or password.</string>
 </resources>
