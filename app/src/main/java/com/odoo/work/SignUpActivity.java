@@ -1,30 +1,34 @@
 package com.odoo.work;
 
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.EditText;
 
+import com.odoo.config.AppConfig;
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
+import com.odoo.core.rpc.listeners.OdooError;
 import com.odoo.core.rpc.listeners.OdooSignUpCallback;
 import com.odoo.core.support.OUser;
 import com.odoo.work.core.support.OdooActivity;
+import com.odoo.work.core.support.account.DeviceAccountUtils;
 
 public class SignUpActivity extends OdooActivity implements View.OnClickListener {
 
     private EditText editName, editEmail, editPassword;
     private Odoo odoo;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base_signup_activity);
-
+        setResult(RESULT_CANCELED);
         try {
-            odoo = Odoo.createInstance(this, "http://192.168.199.101:8069");
+            odoo = Odoo.createInstance(this, AppConfig.HOST_URL);
         } catch (OdooVersionException e) {
             e.printStackTrace();
         }
@@ -42,10 +46,32 @@ public class SignUpActivity extends OdooActivity implements View.OnClickListener
         switch (view.getId()) {
             case R.id.btnSignup:
                 if (isValid()) {
+                    progressDialog = new ProgressDialog(this);
+                    progressDialog.setMessage(getString(R.string.msg_signing_up));
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
                     odoo.signUp(editName.getText().toString(), editEmail.getText().toString(),
                             editPassword.getText().toString(), new OdooSignUpCallback() {
                                 @Override
                                 public void onSignUpSuccess(OUser user) {
+                                    progressDialog.dismiss();
+                                    if (DeviceAccountUtils.get(SignUpActivity.this)
+                                            .createAccount(user)) {
+                                        setResult(RESULT_OK);
+                                        finish();
+                                    }
+                                }
+
+                                @Override
+                                public void onSignUpFail(OdooError error) {
+                                    super.onSignUpFail(error);
+                                    progressDialog.dismiss();
+                                    int error_res = R.string.error_unable_to_signup;
+                                    if (error.getMessage().contains("already exists")) {
+                                        error_res = R.string.error_account_already_exists;
+                                    }
+                                    Snackbar.make(getContentView(),
+                                            error_res, Snackbar.LENGTH_SHORT).show();
                                 }
                             });
                 }

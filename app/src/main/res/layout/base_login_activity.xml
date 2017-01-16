@@ -58,7 +58,7 @@
         android:layout_marginTop="@dimen/default_16dp"
         android:paddingLeft="@dimen/default_16dp"
         android:paddingRight="@dimen/default_16dp"
-        android:text="@string/label_sign_up"
+        android:text="@string/label_login"
         android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/colorPrimaryExtraDark" />
