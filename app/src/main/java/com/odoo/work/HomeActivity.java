@@ -5,5 +5,4 @@ import com.odoo.work.core.support.OdooActivity;
 public class HomeActivity extends OdooActivity {
 
 
-
 }
