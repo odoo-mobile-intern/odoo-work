@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.odoo.work.orm.models.ModelRegistry;
@@ -34,7 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class OModel extends SQLiteOpenHelper {
+public class OModel extends SQLiteOpenHelper implements BaseColumns {
     public static final String TAG = OModel.class.getSimpleName();
     public static final String DATABASE_NAME = "OdooWork";
     public static final int DATABASE_VERSION = 1;
@@ -43,6 +44,7 @@ public class OModel extends SQLiteOpenHelper {
 
     OColumn _id = new OColumn("Local id", ColumnType.INTEGER).makePrimaryKey()
             .makeAutoIncrement().makeLocal();
+    OColumn id = new OColumn("Server Id", ColumnType.INTEGER);
 
     public OModel(Context context, String model) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -105,6 +107,31 @@ public class OModel extends SQLiteOpenHelper {
         return (int) id;
     }
 
+    public int update(ContentValues values, String where, String... args) {
+        SQLiteDatabase db = getWritableDatabase();
+        int id = db.update(getTableName(), values, where, args);
+        db.close();
+        return id;
+    }
+
+    public List<ListRow> select(String where, String... args) {
+
+        List<ListRow> rows = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        args = args.length > 0 ? args : null;
+
+        Cursor cursor = db.query(getTableName(), null, where, args, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                rows.add(new ListRow(cursor));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return rows;
+    }
+
     public int count() {
         int count = 0;
         SQLiteDatabase db = getReadableDatabase();
@@ -128,5 +155,30 @@ public class OModel extends SQLiteOpenHelper {
             }
         }
         return serverColumns.toArray(new String[serverColumns.size()]);
+    }
+
+    public static OModel createInstance(String relModel, Context mContext) {
+
+        HashMap<String, OModel> models = new ModelRegistry().models(mContext);
+        for (String key : models.keySet()) {
+            OModel model = models.get(key);
+            if (model.getModelName().equals(relModel)) {
+                return model;
+            }
+        }
+        return null;
+    }
+
+    public int updateOrCreate(ContentValues values, String where, String... args) {
+        List<ListRow> records = select(where, args);
+
+        if (records.size() > 0) {
+            ListRow row = records.get(0);
+            update(values, where, args);
+            return row.getInt(_ID);
+        } else {
+            create(values);
+        }
+        return 0;
     }
 }
