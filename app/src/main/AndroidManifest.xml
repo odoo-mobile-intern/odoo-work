@@ -36,7 +36,7 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <!--Sync service-->
+        <!--Sync service and provider-->
         <service
             android:name=".sync.OdooSyncService"
             android:exported="true"
@@ -49,11 +49,31 @@
                 android:resource="@xml/sync_adapter" />
         </service>
 
-        <!--odoo provider-->
         <provider
             android:name=".sync.provider.OdooProvider"
             android:authorities="com.odoo.work.sync"
             android:exported="true"
+            android:syncable="true" />
+
+
+        <!--Partner sync service and provider-->
+        <service
+            android:name=".orm.models.services.ResPartnerService"
+            android:exported="true"
+            android:process=":sync">`
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/partner_sync_adapter" />
+        </service>
+
+        <provider
+            android:name=".orm.models.provider.ResPartnerProvider"
+            android:authorities="com.odoo.work.orm.model.partner"
+            android:exported="true"
+            android:label="@string/partner_sync"
             android:syncable="true" />
 
         <activity android:name=".HomeActivity" />

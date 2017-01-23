@@ -15,36 +15,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  * <p>
- * Created on 17/1/17 11:12 AM
+ * Created on 23/1/17 11:23 AM
  */
-package com.odoo.work.sync;
+package com.odoo.work.orm.models.services;
 
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import com.odoo.work.orm.OModel;
+import com.odoo.work.orm.models.ResPartner;
+import com.odoo.work.sync.OdooSyncService;
 
-public class OdooSyncService extends Service {
-    public static final String TAG = OdooSyncService.class.getSimpleName();
-    public OdooSyncAdapter syncAdapter;
+public class ResPartnerService extends OdooSyncService {
+    public static final String TAG = ResPartnerService.class.getSimpleName();
 
+    @Override
     public OModel getModel(Context context) {
-        return null;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        syncAdapter = new OdooSyncAdapter(getApplicationContext(), false,
-                getModel(getApplicationContext()));
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return syncAdapter.getSyncAdapterBinder();
+        return new ResPartner(context);
     }
 }
