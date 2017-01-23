@@ -119,4 +119,14 @@ public class OModel extends SQLiteOpenHelper {
         db.close();
         return count;
     }
+
+    public String[] getServerColumns() {
+        List<String> serverColumns = new ArrayList<>();
+        for (OColumn column : getAllColumns()) {
+            if (!column.isLocal) {
+                serverColumns.add(column.name.toString());
+            }
+        }
+        return serverColumns.toArray(new String[serverColumns.size()]);
+    }
 }

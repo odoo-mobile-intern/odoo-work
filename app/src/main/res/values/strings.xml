@@ -16,4 +16,8 @@
     <string name="error_account_already_exists">Account already exists.</string>
     <string name="toast_account_already_created">Account already created.</string>
     <string name="msg_authenticating">Authenticating...</string>
+
+    <!--partner authority-->
+    <string name="partner_authority">com.odoo.work.orm.model.partner</string>
+    <string name="partner_sync">Partner</string>
 </resources>
