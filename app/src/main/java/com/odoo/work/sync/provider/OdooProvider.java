@@ -21,12 +21,21 @@ package com.odoo.work.sync.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import com.odoo.work.orm.OModel;
+import com.odoo.work.orm.models.ModelRegistry;
+
 public class OdooProvider extends ContentProvider {
     public static final String TAG = OdooProvider.class.getSimpleName();
+
+    public OModel getModel(Context context, Uri uri) {
+        return ModelRegistry.model(context, uri.getLastPathSegment());
+    }
 
     @Override
     public boolean onCreate() {
@@ -35,8 +44,12 @@ public class OdooProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1) {
-        return null;
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+                        String sortOrder) {
+        OModel model = getModel(getContext(), uri);
+        SQLiteDatabase db = model.getReadableDatabase();
+        Cursor cursor = db.query(model.getTableName(), projection, selection, selectionArgs, null, null, sortOrder);
+        return cursor;
     }
 
     @Nullable

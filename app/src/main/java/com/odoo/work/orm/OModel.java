@@ -24,9 +24,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.odoo.work.R;
 import com.odoo.work.orm.models.ModelRegistry;
 
 import java.lang.reflect.Field;
@@ -180,5 +182,17 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
             create(values);
         }
         return 0;
+    }
+
+    public String getAuthority() {
+        return mContext.getString(R.string.main_authority);
+    }
+
+    public Uri getUri() {
+        Uri.Builder uriBuilder = new Uri.Builder();
+        uriBuilder.scheme("content");
+        uriBuilder.authority(getAuthority());
+        uriBuilder.appendPath(getModelName());
+        return uriBuilder.build();
     }
 }

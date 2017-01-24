@@ -15,28 +15,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  * <p>
- * Created on 17/1/17 11:45 AM
+ * Created on 24/1/17 11:53 AM
  */
 package com.odoo.work.orm.models;
 
 import android.content.Context;
 
+import com.odoo.work.R;
+import com.odoo.work.orm.ColumnType;
+import com.odoo.work.orm.OColumn;
 import com.odoo.work.orm.OModel;
 
-import java.util.HashMap;
+public class ProjectProject extends OModel {
+    public static final String TAG = ProjectProject.class.getSimpleName();
+    private Context mContext;
 
-public class ModelRegistry {
-    public HashMap<String, OModel> models(Context context) {
-        HashMap<String, OModel> model = new HashMap<>();
-        model.put("res.partner", new ResPartner(context));
-        model.put("res.country", new ResCountry(context));
-        model.put("res.country.state", new ResState(context));
-        model.put("project.project", new ProjectProject(context));
-        model.put("res.users", new ResUsers(context));
-        return model;
+    OColumn name = new OColumn("Name", ColumnType.VARCHAR);
+    OColumn user_id = new OColumn("Project Manager", ColumnType.MANY2ONE, "res.users");
+
+    public ProjectProject(Context context) {
+        super(context, "project.project");
+        mContext = context;
     }
 
-    public static OModel model(Context context, String modelName) {
-        return new ModelRegistry().models(context).get(modelName);
+    @Override
+    public String getAuthority() {
+        return mContext.getString(R.string.project_authority);
     }
 }

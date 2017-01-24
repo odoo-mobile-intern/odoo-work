@@ -40,7 +40,7 @@
         <service
             android:name=".sync.OdooSyncService"
             android:exported="true"
-            android:process=":sync">`
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -60,7 +60,7 @@
         <service
             android:name=".orm.models.services.ResPartnerService"
             android:exported="true"
-            android:process=":sync">`
+            android:process=":sync_partner">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -76,7 +76,28 @@
             android:label="@string/partner_sync"
             android:syncable="true" />
 
+        <!--Project sync service and provider-->
+        <service
+            android:name=".orm.models.services.ProjectService"
+            android:exported="true"
+            android:process=":sync_project">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/project_sync_adapter" />
+        </service>
+
+        <provider
+            android:name=".orm.models.provider.ProjectProvider"
+            android:authorities="@string/project_authority"
+            android:exported="true"
+            android:label="@string/project_sync"
+            android:syncable="true" />
+
         <activity android:name=".HomeActivity" />
+
     </application>
 
 </manifest>
