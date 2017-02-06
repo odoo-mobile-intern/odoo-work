@@ -35,19 +35,21 @@
         <activity android:name=".HomeActivity" />
         <activity
             android:name=".TeamName"
-            android:theme="@style/AppTheme.LoginSignup" />
+            android:theme="@style/AppTheme.ActionBar" >
+
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter></activity>
         <activity
             android:name=".TeamAddMembers"
 
             android:theme="@style/AppTheme.ActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
-            android:name=".Add_by_email"
+            android:name=".AddByEmail"
             android:theme="@style/AppTheme.ActionBar" />
 
     </application>

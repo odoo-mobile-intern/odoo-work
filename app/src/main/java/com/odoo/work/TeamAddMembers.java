@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -33,7 +34,7 @@ public class TeamAddMembers extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_add_member:
-                startActivity(new Intent(TeamAddMembers.this, Add_by_email.class));
+                startActivity(new Intent(TeamAddMembers.this, AddByEmail.class));
                 break;
         }
     }
@@ -44,5 +45,10 @@ public class TeamAddMembers extends AppCompatActivity implements View.OnClickLis
         getMenuInflater().inflate(R.menu.actionmenu,menu);
         menu.findItem(R.id.action_save).setVisible(false);
         return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        startActivity(new Intent(TeamAddMembers.this,HomeActivity.class));
+        return super.onOptionsItemSelected(item);
     }
 }

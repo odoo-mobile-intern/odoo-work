@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class Add_by_email extends AppCompatActivity {
+public class AddByEmail extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class Add_by_email extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                startActivity(new Intent(Add_by_email.this,TeamAddMembers.class));
+                startActivity(new Intent(AddByEmail.this,TeamAddMembers.class));
                 return true;
 
             default: return super.onOptionsItemSelected(item);
