@@ -11,13 +11,11 @@
     android:paddingTop="@dimen/default_16dp"
     android:weightSum="1">
 
-
     <TextView
-        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Create your team"
+        android:layout_marginBottom="24dp"
+        android:text="@string/create_your_team"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/colorWhite" />
 
@@ -25,33 +23,24 @@
         android:id="@+id/team_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_16dp"
         android:background="@color/colorWhite"
-        android:ems="10"
+        android:hint="i.e My team"
         android:inputType="textPersonName"
         android:padding="12dp"
+        android:textColor="@color/colorPrimaryText"
+        android:textColorHint="#88000000" />
+
+    <Button
+        android:id="@+id/btn_team_create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="24dp"
+        android:background="@color/colorWhite"
         android:paddingLeft="@dimen/default_16dp"
         android:paddingRight="@dimen/default_16dp"
-        android:text="Name"
-        android:textColor="@color/colorPrimaryText"
-        android:textColorHint="@color/colorWhite" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/btn_team_create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="@dimen/default_16dp"
-            android:paddingLeft="@dimen/default_16dp"
-            android:paddingRight="@dimen/default_16dp"
-            android:text="Continue"
-            android:textAllCaps="true"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/colorPrimaryExtraDark" />
-    </LinearLayout>
+        android:text="Continue"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/colorPrimaryExtraDark" />
 </LinearLayout>
