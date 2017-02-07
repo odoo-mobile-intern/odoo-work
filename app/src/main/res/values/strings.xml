@@ -11,11 +11,13 @@
     <string name="label_forgot_password">Forgot Password?</string>
     <string name="error_login_failed">Invalid username or password.</string>
     <string name="label_login">Login</string>
-    <string name="msg_signing_up">Signing up...</string>
+    <string name="msg_signing_up">Signing up…</string>
     <string name="error_unable_to_signup">Unable to signup. Try again later</string>
     <string name="error_account_already_exists">Account already exists.</string>
     <string name="toast_account_already_created">Account already created.</string>
-    <string name="msg_authenticating">Authenticating...</string>
+    <string name="msg_authenticating">Authenticating…</string>
     <string name="create_your_team">Create your team</string>
     <string name="person_or_email">Person or email to collaborate with</string>
+    <string name="hint_team_name">My Team</string>
+    <string name="label_continue">Continue</string>
 </resources>

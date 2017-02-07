@@ -1,46 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/default_16dp"
-    android:paddingLeft="48dp"
-    android:paddingRight="48dp"
-    android:paddingTop="@dimen/default_16dp"
-    android:weightSum="1">
+    android:fillViewport="true">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:text="@string/create_your_team"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/colorWhite" />
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/team_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
-        android:hint="i.e My team"
-        android:inputType="textPersonName"
-        android:padding="12dp"
-        android:textColor="@color/colorPrimaryText"
-        android:textColorHint="#88000000" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/default_16dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="@dimen/default_16dp">
 
-    <Button
-        android:id="@+id/btn_team_create"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="24dp"
-        android:background="@color/colorWhite"
-        android:paddingLeft="@dimen/default_16dp"
-        android:paddingRight="@dimen/default_16dp"
-        android:text="Continue"
-        android:textAllCaps="true"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/colorPrimaryExtraDark" />
-</LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="48dp"
+                android:fontFamily="sans-serif-light"
+                android:text="@string/create_your_team"
+                android:textColor="@color/colorWhite"
+                android:textSize="30sp" />
+
+            <EditText
+                android:id="@+id/team_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorWhite"
+                android:hint="@string/hint_team_name"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:textColor="@color/colorPrimaryText"
+                android:textColorHint="#88000000"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_team_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="24dp"
+            android:background="#99000000"
+            android:paddingLeft="@dimen/default_16dp"
+            android:paddingRight="@dimen/default_16dp"
+            android:text="@string/label_continue"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/colorWhite" />
+    </LinearLayout>
+</ScrollView>

@@ -11,6 +11,6 @@ public class HomeActivity extends OdooActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         finish();
-        startActivity(new Intent(this, TeamName.class));
+        startActivity(new Intent(this, WizardNewTeam.class));
     }
 }

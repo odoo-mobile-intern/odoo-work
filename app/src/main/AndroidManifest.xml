@@ -38,7 +38,7 @@
 
         <activity android:name=".HomeActivity" />
         <activity
-            android:name=".TeamName"
+            android:name=".WizardNewTeam"
             android:theme="@style/AppTheme.ActionBar" />
         <activity
             android:name=".TeamAddMembers"

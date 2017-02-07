@@ -2,18 +2,18 @@ package com.odoo.work;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
+import com.odoo.core.rpc.helper.ORecordValues;
+import com.odoo.core.rpc.helper.utils.gson.OdooResult;
+import com.odoo.core.rpc.listeners.OdooResponse;
 import com.odoo.core.support.OUser;
+import com.odoo.work.core.support.OdooActivity;
 
-public class TeamName extends AppCompatActivity implements View.OnClickListener {
+public class WizardNewTeam extends OdooActivity implements View.OnClickListener {
 
     private Odoo odoo;
     private OUser mUser;
@@ -38,12 +38,15 @@ public class TeamName extends AppCompatActivity implements View.OnClickListener 
     @Override
     public void onClick(View view) {
         if (!editTeamName.getText().toString().isEmpty()) {
-            /*ORecordValues values = new ORecordValues();
+            ORecordValues values = new ORecordValues();
             values.put("name", editTeamName.getText().toString());
-            odoo.createRecord("project.teams", values);*/
-            startActivity(new Intent(TeamName.this, TeamAddMembers.class));
-            finish();
-            //TODO : Team name add to local db
+            odoo.createRecord("project.teams", values, new OdooResponse() {
+                @Override
+                public void onResponse(OdooResult response) {
+                    startActivity(new Intent(WizardNewTeam.this, TeamAddMembers.class));
+                    finish();
+                }
+            });
         }
     }
 }
