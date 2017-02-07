@@ -13,7 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -44,14 +48,8 @@
         </intent-filter></activity>
         <activity
             android:name=".TeamAddMembers"
-
             android:theme="@style/AppTheme.ActionBar">
-
         </activity>
-        <activity
-            android:name=".AddByEmail"
-            android:theme="@style/AppTheme.ActionBar" />
-
     </application>
 
 </manifest>

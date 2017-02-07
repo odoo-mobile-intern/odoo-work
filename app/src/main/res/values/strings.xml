@@ -16,4 +16,6 @@
     <string name="error_account_already_exists">Account already exists.</string>
     <string name="toast_account_already_created">Account already created.</string>
     <string name="msg_authenticating">Authenticating...</string>
+    <string name="create_your_team">Create your team</string>
+    <string name="person_or_email">Person or email to collaborate with</string>
 </resources>
