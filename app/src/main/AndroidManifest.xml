@@ -41,7 +41,9 @@
             android:name=".WizardNewTeam"
             android:theme="@style/AppTheme.ActionBar" />
         <activity
-            android:name=".TeamAddMembers"
+            android:name=".WizardAddTeamMembers"
             android:theme="@style/AppTheme.ActionBar" />
+        <activity android:name=".SelectMembers"/>
     </application>
+
 </manifest>

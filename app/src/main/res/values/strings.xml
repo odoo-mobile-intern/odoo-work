@@ -20,4 +20,5 @@
     <string name="person_or_email">Person or email to collaborate with</string>
     <string name="hint_team_name">My Team</string>
     <string name="label_continue">Continue</string>
+    <string name="label_search_member">Search user</string>
 </resources>

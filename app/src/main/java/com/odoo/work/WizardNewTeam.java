@@ -16,17 +16,15 @@ import com.odoo.work.core.support.OdooActivity;
 public class WizardNewTeam extends OdooActivity implements View.OnClickListener {
 
     private Odoo odoo;
-    private OUser mUser;
     private EditText editTeamName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_name);
-        mUser = OUser.current(this);
 
         try {
-            odoo = Odoo.createWithUser(this, mUser);
+            odoo = Odoo.createWithUser(this, OUser.current(this));
         } catch (OdooVersionException e) {
             e.printStackTrace();
         }
@@ -43,7 +41,7 @@ public class WizardNewTeam extends OdooActivity implements View.OnClickListener 
             odoo.createRecord("project.teams", values, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
-                    startActivity(new Intent(WizardNewTeam.this, TeamAddMembers.class));
+                    startActivity(new Intent(WizardNewTeam.this, WizardAddTeamMembers.class));
                     finish();
                 }
             });

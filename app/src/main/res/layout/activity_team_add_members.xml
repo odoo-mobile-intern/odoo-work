@@ -35,18 +35,15 @@
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
 
-        <MultiAutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
+        <EditText
+            android:id="@+id/editAddMember"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorWhite"
-            android:dropDownHeight="wrap_content"
             android:hint="@string/person_or_email"
-            android:lines="1"
             android:padding="8dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:singleLine="true"
             android:textColor="@color/colorPrimaryText" />
 
         <ListView
