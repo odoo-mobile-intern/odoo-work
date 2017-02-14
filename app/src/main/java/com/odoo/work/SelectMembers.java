@@ -112,7 +112,6 @@ public class SelectMembers extends OdooActivity implements View.OnClickListener,
                     } else {
                         textNoRecord.setVisibility(View.VISIBLE);
                         listView.setVisibility(View.GONE);
-                        //TODO::
                     }
                 }
             });

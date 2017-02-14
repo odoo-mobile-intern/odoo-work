@@ -26,13 +26,23 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
     private ArrayAdapter<String> arrayAdapter;
     private ListView memberListView;
     private ArrayList<Integer> memberIds;
+    private Odoo odoo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_add_members);
 
+        try {
+            odoo = Odoo.createWithUser(this, OUser.current(this));
+        } catch (OdooVersionException e) {
+            e.printStackTrace();
+        }
+
+
         findViewById(R.id.editAddMember).setOnClickListener(this);
+        findViewById(R.id.btn_continue).setOnClickListener(this);
+        findViewById(R.id.btn_skip).setOnClickListener(this);
 
         arrayList = new ArrayList<>();
         memberIds = new ArrayList<>();
@@ -49,6 +59,8 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_skip:
+                startActivity(new Intent(this, HomeActivity.class));
+                finish();
                 break;
             case R.id.editAddMember:
                 Intent intent = new Intent(this, SelectMembers.class);
@@ -63,7 +75,7 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 1 && data != null) {
+        if (resultCode == 1 && data != null && !arrayList.contains(data.getStringExtra("member_name"))) {
             arrayList.add(data.getStringExtra("member_name"));
             memberListView.setAdapter(arrayAdapter);
             updateMemberIds(data.getStringExtra("member_name"), true);
@@ -71,30 +83,21 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
     }
 
     private void updateMemberIds(String name, final boolean toAdd) {
-        try {
-            Odoo odoo = Odoo.createWithUser(this, OUser.current(this));
-            OdooFields fields = new OdooFields("id");
-            ODomain domain = new ODomain();
-            domain.add("name", "like", name);
+        OdooFields fields = new OdooFields("id");
+        ODomain domain = new ODomain();
+        domain.add("name", "like", name);
 
-            odoo.searchRead("res.users", fields, domain, 0, 0, null, new OdooResponse() {
-                @Override
-                public void onResponse(OdooResult response) {
-                    for (OdooRecord record : response.getRecords()) {
-                        if (toAdd)
-                            memberIds.add(record.getInt("id"));
-                        else
-                            memberIds.remove(record.getInt("id"));
-                    }
+        odoo.searchRead("res.users", fields, domain, 0, 0, null, new OdooResponse() {
+            @Override
+            public void onResponse(OdooResult response) {
+                for (OdooRecord record : response.getRecords()) {
+                    if (toAdd)
+                        memberIds.add(record.getInt("id"));
+                    else
+                        memberIds.remove(record.getInt("id"));
                 }
-            });
-
-        } catch (OdooVersionException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void addMemberIds() {
+            }
+        });
     }
 
     @Override
@@ -102,5 +105,21 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
         updateMemberIds(arrayAdapter.getItem(position), false);
         arrayList.remove(arrayAdapter.getItem(position));
         memberListView.setAdapter(arrayAdapter);
+    }
+
+    private void addMemberIds() {
+        // TODO :
+
+       /* Log.e(">>>>..", memberIds + "");
+        ORecordValues values = new ORecordValues();
+        values.put("team_member_ids", memberIds);
+        odoo.updateRecord("project.teams", values, getIntent().getIntExtra("prj_id", 0), new OdooResponse() {
+            @Override
+            public void onResponse(OdooResult response) {
+                Log.e(">>>>>>>>", "success");
+            }
+        });*/
+        finish();
+
     }
 }
