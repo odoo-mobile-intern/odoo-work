@@ -15,28 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  * <p>
- * Created on 17/1/17 11:45 AM
+ * Created on 6/2/17 11:59 AM
  */
 package com.odoo.work.orm.models;
 
 import android.content.Context;
 
+import com.odoo.work.orm.ColumnType;
+import com.odoo.work.orm.OColumn;
 import com.odoo.work.orm.OModel;
 
-import java.util.HashMap;
+public class ProjectTeams extends OModel {
+    public static final String TAG = ProjectTeams.class.getSimpleName();
 
-public class ModelRegistry {
-    public HashMap<String, OModel> models(Context context) {
-        HashMap<String, OModel> model = new HashMap<>();
-        model.put("res.partner", new ResPartner(context));
-        model.put("res.country", new ResCountry(context));
-        model.put("res.country.state", new ResState(context));
-        model.put("project.project", new ProjectProject(context));
-        model.put("res.users", new ResUsers(context));
-        return model;
-    }
+    OColumn name = new OColumn("Team Name", ColumnType.VARCHAR);
+    //OColumn team_member_ids = new OColumn("Team member Ids", ColumnType.MANY2MANY, "project.team.members");
 
-    public static OModel model(Context context, String modelName) {
-        return new ModelRegistry().models(context).get(modelName);
+    public ProjectTeams(Context context) {
+        super(context, "project.teams");
     }
 }

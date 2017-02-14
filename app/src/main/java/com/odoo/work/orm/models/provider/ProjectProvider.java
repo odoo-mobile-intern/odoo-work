@@ -15,28 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http:www.gnu.org/licenses/>
  * <p>
- * Created on 17/1/17 11:45 AM
+ * Created on 24/1/17 11:57 AM
  */
-package com.odoo.work.orm.models;
+package com.odoo.work.orm.models.provider;
 
-import android.content.Context;
+import com.odoo.work.sync.provider.OdooProvider;
 
-import com.odoo.work.orm.OModel;
-
-import java.util.HashMap;
-
-public class ModelRegistry {
-    public HashMap<String, OModel> models(Context context) {
-        HashMap<String, OModel> model = new HashMap<>();
-        model.put("res.partner", new ResPartner(context));
-        model.put("res.country", new ResCountry(context));
-        model.put("res.country.state", new ResState(context));
-        model.put("project.project", new ProjectProject(context));
-        model.put("res.users", new ResUsers(context));
-        return model;
-    }
-
-    public static OModel model(Context context, String modelName) {
-        return new ModelRegistry().models(context).get(modelName);
-    }
+public class ProjectProvider extends OdooProvider {
+    public static final String TAG = ProjectProvider.class.getSimpleName();
 }
