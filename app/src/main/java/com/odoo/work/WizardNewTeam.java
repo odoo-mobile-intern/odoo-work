@@ -41,7 +41,9 @@ public class WizardNewTeam extends OdooActivity implements View.OnClickListener 
             odoo.createRecord("project.teams", values, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
-                    startActivity(new Intent(WizardNewTeam.this, WizardAddTeamMembers.class));
+                    Double dbl = Double.valueOf(response.getString("result"));
+                    startActivity(new Intent(WizardNewTeam.this, WizardAddTeamMembers.class).
+                            putExtra("prj_id", dbl.intValue()));
                     finish();
                 }
             });

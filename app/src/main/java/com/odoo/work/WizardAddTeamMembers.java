@@ -4,15 +4,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
+
+import com.odoo.core.rpc.Odoo;
+import com.odoo.core.rpc.handler.OdooVersionException;
+import com.odoo.core.rpc.helper.ODomain;
+import com.odoo.core.rpc.helper.OdooFields;
+import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
+import com.odoo.core.rpc.helper.utils.gson.OdooResult;
+import com.odoo.core.rpc.listeners.OdooResponse;
+import com.odoo.core.support.OUser;
 
 import java.util.ArrayList;
 
-public class WizardAddTeamMembers extends AppCompatActivity implements View.OnClickListener {
+public class WizardAddTeamMembers extends AppCompatActivity implements View.OnClickListener,
+        AdapterView.OnItemClickListener {
 
-    private EditText addMember;
+    private ArrayList<String> arrayList;
+    private ArrayAdapter<String> arrayAdapter;
+    private ListView memberListView;
+    private ArrayList<Integer> memberIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,12 +33,16 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_team_add_members);
 
         findViewById(R.id.editAddMember).setOnClickListener(this);
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("Vedant");
-        arrayList.add("pratik");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
-        ListView l1 = (ListView) findViewById(R.id.lst_team_members);
-        l1.setAdapter(arrayAdapter);
+
+        arrayList = new ArrayList<>();
+        memberIds = new ArrayList<>();
+
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.member_list_item,
+                R.id.textMemberName, arrayList);
+        memberListView = (ListView) findViewById(R.id.lst_team_members);
+        memberListView.setOnItemClickListener(this);
+
+        memberListView.setAdapter(arrayAdapter);
     }
 
     @Override
@@ -34,8 +51,56 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
             case R.id.btn_skip:
                 break;
             case R.id.editAddMember:
-                startActivity(new Intent(this, SelectMembers.class));
+                Intent intent = new Intent(this, SelectMembers.class);
+                startActivityForResult(intent, 1);
+                break;
+            case R.id.btn_continue:
+                addMemberIds();
                 break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 1 && data != null) {
+            arrayList.add(data.getStringExtra("member_name"));
+            memberListView.setAdapter(arrayAdapter);
+            updateMemberIds(data.getStringExtra("member_name"), true);
+        }
+    }
+
+    private void updateMemberIds(String name, final boolean toAdd) {
+        try {
+            Odoo odoo = Odoo.createWithUser(this, OUser.current(this));
+            OdooFields fields = new OdooFields("id");
+            ODomain domain = new ODomain();
+            domain.add("name", "like", name);
+
+            odoo.searchRead("res.users", fields, domain, 0, 0, null, new OdooResponse() {
+                @Override
+                public void onResponse(OdooResult response) {
+                    for (OdooRecord record : response.getRecords()) {
+                        if (toAdd)
+                            memberIds.add(record.getInt("id"));
+                        else
+                            memberIds.remove(record.getInt("id"));
+                    }
+                }
+            });
+
+        } catch (OdooVersionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addMemberIds() {
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        updateMemberIds(arrayAdapter.getItem(position), false);
+        arrayList.remove(arrayAdapter.getItem(position));
+        memberListView.setAdapter(arrayAdapter);
     }
 }

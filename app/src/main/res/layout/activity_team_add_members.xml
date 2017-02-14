@@ -35,7 +35,7 @@
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
 
-        <EditText
+        <TextView
             android:id="@+id/editAddMember"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,8 +43,7 @@
             android:hint="@string/person_or_email"
             android:padding="8dp"
             android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:textColor="@color/colorPrimaryText" />
+            android:layout_marginBottom="4dp"/>
 
         <ListView
             android:id="@+id/lst_team_members"
