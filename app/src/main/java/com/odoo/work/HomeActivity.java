@@ -5,6 +5,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -13,26 +14,26 @@ import android.widget.TextView;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.orm.data.ListRow;
 import com.odoo.work.orm.OListAdapter;
-import com.odoo.work.addons.customer.model.ResPartner;
+import com.odoo.work.orm.models.ProjectProject;
 
 public class HomeActivity extends OdooActivity implements View.OnClickListener,
         OListAdapter.OnViewBindInflateListener, LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     private OListAdapter listAdapter;
-    private ResPartner resPartner;
+    private ProjectProject projectProject;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        resPartner = new ResPartner(this);
+        projectProject = new ProjectProject(this);
 
-        ListView partner_listView = (ListView) findViewById(R.id.partner_list);
-        listAdapter = new OListAdapter(this, null, R.layout.partner_list_item);
+        ListView project_listView = (ListView) findViewById(R.id.project_list);
+        listAdapter = new OListAdapter(this, null, R.layout.project_list_item);
         listAdapter.setViewBindInflateListener(this);
-        partner_listView.setOnItemClickListener(this);
-        partner_listView.setAdapter(listAdapter);
+        project_listView.setOnItemClickListener(this);
+        project_listView.setAdapter(listAdapter);
 
         getLoaderManager().initLoader(0, null, this);
 
@@ -48,17 +49,25 @@ public class HomeActivity extends OdooActivity implements View.OnClickListener,
 
         TextView textPartnerName, textPartnerMail;
 
-        textPartnerName = (TextView) view.findViewById(R.id.partner_name);
-        textPartnerMail = (TextView) view.findViewById(R.id.partner_mail);
+        textPartnerName = (TextView) view.findViewById(R.id.project_name);
+        textPartnerMail = (TextView) view.findViewById(R.id.project_task);
 
         textPartnerName.setText(row.getString("name"));
-        textPartnerMail.setText(row.getString("email"));
+        Log.e(">>>>", row.getString("use_tasks"));
+
+        if (!row.getString("use_tasks").equals("false")) {
+            textPartnerMail.setText(row.getString("label_tasks"));
+        } else {
+            textPartnerMail.setVisibility(View.INVISIBLE);
+
+        }
+//
 
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this, resPartner.getUri(), null, null, null, null);
+        return new CursorLoader(this, projectProject.getUri(), null, null, null, null);
     }
 
     @Override
