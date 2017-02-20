@@ -26,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
+import com.odoo.work.orm.data.ListRow;
+
 public class OListAdapter extends CursorAdapter {
     public static final String TAG = OListAdapter.class.getSimpleName();
     private OnNewViewInflateListener newViewInflateListener;

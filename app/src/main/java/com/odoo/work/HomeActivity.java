@@ -11,9 +11,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.odoo.work.core.support.OdooActivity;
-import com.odoo.work.orm.ListRow;
+import com.odoo.work.orm.data.ListRow;
 import com.odoo.work.orm.OListAdapter;
-import com.odoo.work.orm.models.ResPartner;
+import com.odoo.work.addons.customer.model.ResPartner;
 
 public class HomeActivity extends OdooActivity implements View.OnClickListener,
         OListAdapter.OnViewBindInflateListener, LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {

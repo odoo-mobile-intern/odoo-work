@@ -17,14 +17,14 @@
     <string name="toast_account_already_created">Account already created.</string>
     <string name="msg_authenticating">Authenticating...</string>
 
-    <!--Main authority-->
-    <string name="main_authority">com.odoo.work.sync</string>
+    <!--Main getAuthority-->
+    <string name="main_authority">com.odoo.work.content.models</string>
 
-    <!--partner authority-->
+    <!--partner getAuthority-->
     <string name="partner_authority">com.odoo.work.orm.model.partner</string>
     <string name="partner_sync">Partner</string>
 
-    <!--project authority-->
+    <!--project getAuthority-->
     <string name="project_authority">com.odoo.work.orm.model.project</string>
     <string name="project_sync">Project</string>
 </resources>

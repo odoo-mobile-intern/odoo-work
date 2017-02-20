@@ -36,29 +36,12 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <!--Sync service and provider-->
-        <service
-            android:name=".sync.OdooSyncService"
-            android:exported="true"
-            android:process=":sync">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_adapter" />
-        </service>
-
         <provider
-            android:name=".sync.provider.OdooProvider"
-            android:authorities="com.odoo.work.sync"
-            android:exported="true"
-            android:syncable="true" />
-
-
+            android:name=".orm.sync.provider.BaseContentProvider"
+            android:authorities="${applicationId}.content.models" />
         <!--Partner sync service and provider-->
         <service
-            android:name=".orm.models.services.ResPartnerService"
+            android:name=".addons.customer.service.ResPartnerService"
             android:exported="true"
             android:process=":sync_partner">
             <intent-filter>
@@ -70,15 +53,15 @@
         </service>
 
         <provider
-            android:name=".orm.models.provider.ResPartnerProvider"
-            android:authorities="com.odoo.work.orm.model.partner"
+            android:name=".addons.customer.provider.ResPartnerProvider"
+            android:authorities="@string/partner_authority"
             android:exported="true"
             android:label="@string/partner_sync"
             android:syncable="true" />
 
         <!--Project sync service and provider-->
         <service
-            android:name=".orm.models.services.ProjectService"
+            android:name=".addons.project.service.ProjectService"
             android:exported="true"
             android:process=":sync_project">
             <intent-filter>
@@ -90,14 +73,11 @@
         </service>
 
         <provider
-            android:name=".orm.models.provider.ProjectProvider"
+            android:name=".addons.project.provider.ProjectProvider"
             android:authorities="@string/project_authority"
             android:exported="true"
             android:label="@string/project_sync"
             android:syncable="true" />
-
         <activity android:name=".HomeActivity" />
-
     </application>
-
 </manifest>

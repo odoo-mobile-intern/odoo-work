@@ -36,7 +36,7 @@ public class CreateQueryBuilder {
                 .append(" ( ");
 
         StringBuffer stringBuffer = new StringBuffer();
-        for (OColumn column : model.getAllColumns()) {
+        for (OColumn column : model.getColumns()) {
             stringBuffer.append(column.name)
                     .append(" ")
                     .append(column.columnType.toString());
