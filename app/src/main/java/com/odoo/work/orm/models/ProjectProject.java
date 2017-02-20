@@ -31,7 +31,7 @@ public class ProjectProject extends OModel {
     private Context mContext;
 
     OColumn name = new OColumn("Project Title", ColumnType.VARCHAR);
-    OColumn use_tasks = new OColumn("is Task", ColumnType.BOOLEAN);
+    OColumn use_tasks = new OColumn("is Task", ColumnType.VARCHAR);
     OColumn label_tasks = new OColumn("Task Label", ColumnType.VARCHAR);
     OColumn user_id = new OColumn("User Id", ColumnType.MANY2ONE, "res.users");
     OColumn partner_id = new OColumn("Partner Id", ColumnType.MANY2ONE, "res.partner");

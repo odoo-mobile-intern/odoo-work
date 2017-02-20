@@ -6,7 +6,7 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/partner_name"
+        android:id="@+id/project_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="24sp" />
@@ -15,6 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:id="@+id/partner_mail"/>
+        android:id="@+id/project_task"/>
 
 </LinearLayout>
