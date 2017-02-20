@@ -8,6 +8,8 @@ import android.widget.EditText;
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
 import com.odoo.core.rpc.helper.ORecordValues;
+import com.odoo.core.rpc.helper.ORelData;
+import com.odoo.core.rpc.helper.ORelValues;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.rpc.listeners.OdooResponse;
 import com.odoo.core.support.OUser;
@@ -36,17 +38,28 @@ public class WizardNewTeam extends OdooActivity implements View.OnClickListener 
     @Override
     public void onClick(View view) {
         if (!editTeamName.getText().toString().isEmpty()) {
+            OUser user = OUser.current(this);
+            assert user != null;
             ORecordValues values = new ORecordValues();
             values.put("name", editTeamName.getText().toString());
+            ORelData data = new ORelData();
+            data.add("user_id", user.getUserId());
+            data.add("state", "accepted");
+            values.put("team_member_ids", new ORelValues().add(data));
             odoo.createRecord("project.teams", values, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
-                    Double dbl = Double.valueOf(response.getString("result"));
-                    startActivity(new Intent(WizardNewTeam.this, WizardAddTeamMembers.class).
-                            putExtra("prj_id", dbl.intValue()));
-                    finish();
+                    int team_id = response.getInt("result");
+                    addNewMembers(team_id);
                 }
             });
         }
+    }
+
+    private void addNewMembers(int team_id) {
+        Intent intent = new Intent(this, WizardAddTeamMembers.class);
+        intent.putExtra(WizardAddTeamMembers.TEAM_ID, team_id);
+        startActivity(intent);
+        finish();
     }
 }

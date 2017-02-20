@@ -14,7 +14,7 @@ public class SplashScreen extends OdooActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base_splash_screen);
         if (DeviceAccountUtils.get(this).hasAnyAccount()) {
-            startActivity(new Intent(this, HomeActivity.class));
+            startActivity(new Intent(this, WizardNewTeam.class));
             finish();
         } else {
             new Handler().postDelayed(new Runnable() {

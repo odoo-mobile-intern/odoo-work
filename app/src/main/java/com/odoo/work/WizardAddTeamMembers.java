@@ -11,6 +11,9 @@ import android.widget.ListView;
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
 import com.odoo.core.rpc.helper.ODomain;
+import com.odoo.core.rpc.helper.ORecordValues;
+import com.odoo.core.rpc.helper.ORelData;
+import com.odoo.core.rpc.helper.ORelValues;
 import com.odoo.core.rpc.helper.OdooFields;
 import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 public class WizardAddTeamMembers extends AppCompatActivity implements View.OnClickListener,
         AdapterView.OnItemClickListener {
 
+    public static final String TEAM_ID = "team_id";
     private ArrayList<String> arrayList;
     private ArrayAdapter<String> arrayAdapter;
     private ListView memberListView;
@@ -108,18 +112,22 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
     }
 
     private void addMemberIds() {
-        // TODO :
-
-       /* Log.e(">>>>..", memberIds + "");
-        ORecordValues values = new ORecordValues();
-        values.put("team_member_ids", memberIds);
-        odoo.updateRecord("project.teams", values, getIntent().getIntExtra("prj_id", 0), new OdooResponse() {
-            @Override
-            public void onResponse(OdooResult response) {
-                Log.e(">>>>>>>>", "success");
+        int teamId = getIntent().getIntExtra(TEAM_ID, -1);
+        if (teamId != -1) {
+            ORecordValues values = new ORecordValues();
+            ORelValues relValues = new ORelValues();
+            for (int id : memberIds) {
+                relValues.add(new ORelData().add("user_id", id));
             }
-        });*/
-        finish();
+            values.put("team_member_ids", relValues);
+            odoo.updateRecord("project.teams", values, teamId, new OdooResponse() {
+                @Override
+                public void onResponse(OdooResult response) {
+                    //todo goto dashboard
+                }
+            });
+            finish();
+        }
 
     }
 }
