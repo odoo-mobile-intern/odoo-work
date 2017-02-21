@@ -17,6 +17,7 @@ import com.odoo.core.rpc.helper.OdooFields;
 import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.support.OUser;
+import com.odoo.work.R;
 import com.odoo.work.orm.OModel;
 import com.odoo.work.orm.models.LocalRecordState;
 
@@ -49,7 +50,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         mUser = getUser(account);
         try {
             odoo = Odoo.createWithUser(mContext, mUser);
-            if (authority.equals("com.odoo.followup.appdata.sync")) {
+            if (authority.equals(mContext.getString(R.string.main_authority))) {
                 // Sync app data with multiple models
                 // fixme
                 syncAppData();

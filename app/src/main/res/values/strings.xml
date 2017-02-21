@@ -27,4 +27,5 @@
     <!--project getAuthority-->
     <string name="project_authority">com.odoo.work.orm.model.project</string>
     <string name="project_sync">Project</string>
+    <string name="label_app_data">App Data</string>
 </resources>

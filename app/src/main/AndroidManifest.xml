@@ -36,9 +36,26 @@
                 android:resource="@xml/authenticator" />
         </service>
 
+        <!-- App Data Sync Service and Provider -->
+        <service
+            android:name=".orm.sync.SyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter" />
+        </service>
+
         <provider
             android:name=".orm.sync.provider.BaseContentProvider"
-            android:authorities="${applicationId}.content.models" />
+            android:authorities="${applicationId}.content.models"
+            android:exported="true"
+            android:label="@string/label_app_data"
+            android:syncable="true" />
+
         <!--Partner sync service and provider-->
         <service
             android:name=".addons.customer.service.ResPartnerService"
