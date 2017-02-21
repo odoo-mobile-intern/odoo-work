@@ -3,9 +3,12 @@ package com.odoo.work;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -28,10 +31,12 @@ import java.util.List;
 public class SelectMembers extends OdooActivity implements View.OnClickListener,
         AdapterView.OnItemClickListener, TextWatcher {
 
+    public static final String KEY_MEMBER_NAME = "member_name";
+    public static final String KEY_MEMBER_ID = "member_id";
     private Odoo odoo;
     private EditText editAddMembers;
-    private ArrayAdapter<String> arrayAdapter;
-    private ArrayList<String> memberList;
+    private ArrayAdapter<OdooRecord> arrayAdapter;
+    private ArrayList<OdooRecord> memberList;
     private ListView listView;
     private TextView textNoRecord;
 
@@ -64,10 +69,12 @@ public class SelectMembers extends OdooActivity implements View.OnClickListener,
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        String memberName = arrayAdapter.getItem(position);
+        OdooRecord record = arrayAdapter.getItem(position);
+        assert record != null;
         Intent intent = new Intent();
-        intent.putExtra("member_name", memberName);
-        setResult(1, intent);
+        intent.putExtra(KEY_MEMBER_ID, record.getInt("id"));
+        intent.putExtra(KEY_MEMBER_NAME, record.getString("name"));
+        setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -90,9 +97,9 @@ public class SelectMembers extends OdooActivity implements View.OnClickListener,
         if (!editAddMembers.getText().toString().trim().isEmpty()) {
             OdooFields fields = new OdooFields("name");
             ODomain domain = new ODomain();
-            domain.add("share", "=", false);
-            domain.add("name", "like", editAddMembers.getText().toString());
-            odoo.searchRead("res.users", fields, domain, 0, 0, null, new OdooResponse() {
+            domain.add("id", "!=", OUser.current(this).getPartnerId());
+            domain.add("name", "ilike", editAddMembers.getText().toString());
+            odoo.searchRead("res.partner", fields, domain, 0, 0, null, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
                     if (response.getSize() > 0) {
@@ -103,9 +110,19 @@ public class SelectMembers extends OdooActivity implements View.OnClickListener,
                         memberList.clear();
                         for (OdooRecord record : records) {
                             if (record != null) {
-                                memberList.add(record.getString("name"));
-                                arrayAdapter = new ArrayAdapter<>(SelectMembers.this,
-                                        android.R.layout.simple_list_item_1, android.R.id.text1, memberList);
+                                memberList.add(record);
+                                arrayAdapter = new ArrayAdapter<OdooRecord>(SelectMembers.this,
+                                        android.R.layout.simple_list_item_1, android.R.id.text1, memberList) {
+                                    @NonNull
+                                    @Override
+                                    public View getView(int position, View convertView, ViewGroup parent) {
+                                        if (convertView == null)
+                                            convertView = LayoutInflater.from(SelectMembers.this).inflate(android.R.layout.simple_list_item_1, parent, false);
+                                        TextView view = (TextView) convertView.findViewById(android.R.id.text1);
+                                        view.setText(getItem(position).getString("name"));
+                                        return convertView;
+                                    }
+                                };
                                 listView.setAdapter(arrayAdapter);
                             }
                         }

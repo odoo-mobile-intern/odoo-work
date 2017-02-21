@@ -2,6 +2,8 @@ package com.odoo.work;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SyncResult;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
@@ -16,8 +18,10 @@ import com.odoo.core.rpc.listeners.IOdooLoginCallback;
 import com.odoo.core.rpc.listeners.OdooConnectionListener;
 import com.odoo.core.rpc.listeners.OdooError;
 import com.odoo.core.support.OUser;
+import com.odoo.work.addons.project.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.core.support.account.DeviceAccountUtils;
+import com.odoo.work.orm.sync.SyncAdapter;
 
 
 public class LoginActivity extends OdooActivity implements View.OnClickListener,
@@ -25,6 +29,7 @@ public class LoginActivity extends OdooActivity implements View.OnClickListener,
     public static final int REQUEST_NEW_SIGNUP = 123;
     private EditText editEmail, editPassword;
     private ProgressDialog progressDialog;
+    private Odoo odoo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,11 +56,11 @@ public class LoginActivity extends OdooActivity implements View.OnClickListener,
                         progressDialog.setCancelable(false);
                         progressDialog.setMessage(getString(R.string.msg_authenticating));
                         progressDialog.show();
-                        Odoo odoo = Odoo.createInstance(this, AppConfig.HOST_URL);
+                        odoo = Odoo.createInstance(this, AppConfig.HOST_URL);
                         odoo.setOnConnect(new OdooConnectionListener() {
                             @Override
                             public void onConnect(Odoo odoo) {
-                                odoo.authenticate(editEmail.getText().toString(), editPassword.getText().toString(),
+                                odoo.authenticate(editEmail.getText().toString().trim(), editPassword.getText().toString().trim(),
                                         AppConfig.HOST_DB, LoginActivity.this);
                             }
 
@@ -97,10 +102,30 @@ public class LoginActivity extends OdooActivity implements View.OnClickListener,
 
     @Override
     public void onLoginSuccess(Odoo odoo, OUser user) {
-        progressDialog.dismiss();
+        this.odoo = odoo;
         if (DeviceAccountUtils.get(this).createAccount(user)) {
-            startSplashScreen();
+            getUserData();
         }
+    }
+
+    private void getUserData() {
+        progressDialog.setMessage(getString(R.string.msg_setting_your_account));
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                ProjectTeams teams = new ProjectTeams(LoginActivity.this);
+                SyncAdapter adapter = teams.getSyncAdapter();
+                SyncResult result = adapter.syncModelData();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                progressDialog.dismiss();
+                startSplashScreen();
+            }
+        }.execute();
     }
 
     @Override

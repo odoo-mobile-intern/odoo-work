@@ -18,6 +18,7 @@ import com.odoo.work.orm.data.ListRow;
 import com.odoo.work.orm.models.IrModel;
 import com.odoo.work.orm.models.LocalRecordState;
 import com.odoo.work.orm.models.ModelRegistry;
+import com.odoo.work.orm.sync.SyncAdapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -316,5 +317,13 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
 
     public boolean isEmpty() {
         return count() <= 0;
+    }
+
+    public SyncAdapter getSyncAdapter() {
+        return new SyncAdapter(mContext, true, this);
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 }

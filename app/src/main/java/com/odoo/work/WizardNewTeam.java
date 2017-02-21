@@ -8,8 +8,6 @@ import android.widget.EditText;
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
 import com.odoo.core.rpc.helper.ORecordValues;
-import com.odoo.core.rpc.helper.ORelData;
-import com.odoo.core.rpc.helper.ORelValues;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.rpc.listeners.OdooResponse;
 import com.odoo.core.support.OUser;
@@ -42,10 +40,6 @@ public class WizardNewTeam extends OdooActivity implements View.OnClickListener 
             assert user != null;
             ORecordValues values = new ORecordValues();
             values.put("name", editTeamName.getText().toString());
-            ORelData data = new ORelData();
-            data.add("user_id", user.getUserId());
-            data.add("state", "accepted");
-            values.put("team_member_ids", new ORelValues().add(data));
             odoo.createRecord("project.teams", values, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
