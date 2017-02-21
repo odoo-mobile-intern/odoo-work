@@ -36,6 +36,65 @@
                 android:resource="@xml/authenticator" />
         </service>
 
+        <!-- App Data Sync Service and Provider -->
+        <service
+            android:name=".orm.sync.SyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter" />
+        </service>
+
+        <provider
+            android:name=".orm.sync.provider.BaseContentProvider"
+            android:authorities="${applicationId}.content.models"
+            android:exported="true"
+            android:label="@string/label_app_data"
+            android:syncable="true" />
+
+        <!--Partner sync service and provider-->
+        <service
+            android:name=".addons.customer.service.ResPartnerService"
+            android:exported="true"
+            android:process=":sync_partner">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/partner_sync_adapter" />
+        </service>
+
+        <provider
+            android:name=".addons.customer.provider.ResPartnerProvider"
+            android:authorities="@string/partner_authority"
+            android:exported="true"
+            android:label="@string/partner_sync"
+            android:syncable="true" />
+
+        <!--Project sync service and provider-->
+        <service
+            android:name=".addons.project.service.ProjectService"
+            android:exported="true"
+            android:process=":sync_project">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/project_sync_adapter" />
+        </service>
+
+        <provider
+            android:name=".addons.project.provider.ProjectProvider"
+            android:authorities="@string/project_authority"
+            android:exported="true"
+            android:label="@string/project_sync"
+            android:syncable="true" />
         <activity android:name=".HomeActivity" />
         <activity
             android:name=".WizardNewTeam"
@@ -45,5 +104,4 @@
             android:theme="@style/AppTheme.ActionBar" />
         <activity android:name=".SelectMembers"/>
     </application>
-
 </manifest>

@@ -21,4 +21,16 @@
     <string name="hint_team_name">My Team</string>
     <string name="label_continue">Continue</string>
     <string name="label_search_member">Search user</string>
+
+    <!--Main getAuthority-->
+    <string name="main_authority">com.odoo.work.content.models</string>
+
+    <!--partner getAuthority-->
+    <string name="partner_authority">com.odoo.work.orm.model.partner</string>
+    <string name="partner_sync">Partner</string>
+
+    <!--project getAuthority-->
+    <string name="project_authority">com.odoo.work.orm.model.project</string>
+    <string name="project_sync">Project</string>
+    <string name="label_app_data">App Data</string>
 </resources>

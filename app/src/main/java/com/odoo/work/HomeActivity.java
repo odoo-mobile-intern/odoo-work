@@ -9,5 +9,6 @@ public class HomeActivity extends OdooActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.home_activity);
     }
 }
