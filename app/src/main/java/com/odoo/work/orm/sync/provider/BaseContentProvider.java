@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.odoo.work.orm.OModel;
 import com.odoo.work.orm.models.ModelRegistry;
@@ -74,21 +73,11 @@ public class BaseContentProvider extends ContentProvider {
     public int update(Uri uri, ContentValues contentValues, String where, String[] args) {
         OModel model = getModel(getContext(), uri);
         setMatcher(model);
-        int match = matcher.match(uri);
-        int count = 0;
-        SQLiteDatabase db = null;
-        switch (match) {
-            case COLLECTION:
-                break;
-            case SINGLE_ROW:
-                db = model.getWritableDatabase();
-                int updateId = Integer.parseInt(uri.getLastPathSegment());
-                where = "_id = ?";
-                args = new String[]{updateId + ""};
-                count = db.update(model.getTableName(), contentValues, where, args);
-                break;
-        }
-        if (db != null) db.close();
+        SQLiteDatabase db = model.getWritableDatabase();
+        int updateId = Integer.parseInt(uri.getLastPathSegment());
+        where = "_id = ?";
+        args = new String[]{updateId + ""};
+        int count = db.update(model.getTableName(), contentValues, where, args);
         notifyDataChange(uri);
         return count;
     }
