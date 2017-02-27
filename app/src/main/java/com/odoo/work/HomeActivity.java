@@ -11,5 +11,4 @@ public class HomeActivity extends OdooActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
     }
-
 }

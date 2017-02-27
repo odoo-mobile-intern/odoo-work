@@ -35,6 +35,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private int offset = 0;
     private int limit = 80;
     private OModel syncModel;
+    private boolean forceSyncModel = false;
     private HashMap<String, HashSet<Integer>> relationRecordsSyncFinished = new HashMap<>();
 
     public SyncAdapter(Context context, boolean autoInitialize, OModel syncModel) {
@@ -50,7 +51,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         mUser = getUser(account);
         try {
             odoo = Odoo.createWithUser(mContext, mUser);
-            if (authority.equals(mContext.getString(R.string.main_authority))) {
+            if (authority.equals(mContext.getString(R.string.main_authority)) && !forceSyncModel) {
                 // Sync app data with multiple models
                 // fixme
                 syncAppData();
@@ -239,5 +240,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         user.setDatabase(accountManager.getUserData(account, "database"));
         user.setSession_id(accountManager.getUserData(account, "session_id"));
         return user;
+    }
+
+    public SyncResult syncModelData() {
+        OUser user = OUser.current(syncModel.getContext());
+        assert user != null;
+        SyncResult result = new SyncResult();
+        forceSyncModel = true;
+        onPerformSync(user.getAccount(), new Bundle(), syncModel.getAuthority(), null, result);
+        return result;
     }
 }

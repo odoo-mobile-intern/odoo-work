@@ -96,5 +96,12 @@
             android:label="@string/project_sync"
             android:syncable="true" />
         <activity android:name=".HomeActivity" />
+        <activity
+            android:name=".WizardNewTeam"
+            android:theme="@style/AppTheme.ActionBar" />
+        <activity
+            android:name=".WizardAddTeamMembers"
+            android:theme="@style/AppTheme.ActionBar" />
+        <activity android:name=".SelectMembers"/>
     </application>
 </manifest>

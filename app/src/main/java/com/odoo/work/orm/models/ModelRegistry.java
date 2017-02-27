@@ -2,6 +2,7 @@ package com.odoo.work.orm.models;
 
 import android.content.Context;
 
+import com.odoo.work.addons.project.models.ProjectTeams;
 import com.odoo.work.orm.OModel;
 import com.odoo.work.addons.project.models.ProjectProject;
 import com.odoo.work.addons.customer.model.ResPartner;
@@ -15,9 +16,8 @@ public class ModelRegistry {
         model.put("ir.model", new IrModel(context));
         model.put("local.record.state", new LocalRecordState(context));
         model.put("res.partner", new ResPartner(context));
-        model.put("res.country.state", new ResState(context));
-        model.put("res.country", new ResCountry(context));
         model.put("project.project", new ProjectProject(context));
+        model.put("project.teams", new ProjectTeams(context));
         model.put("res.users", new ResUsers(context));
         return model;
     }
