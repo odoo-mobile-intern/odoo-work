@@ -91,7 +91,7 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
     public Uri getUri() {
         Uri.Builder uriBuilder = new Uri.Builder();
         uriBuilder.authority(getAuthority());
-        uriBuilder.appendPath("data");
+        uriBuilder.appendPath(getModelName());
         uriBuilder.scheme("content");
         uriBuilder.appendQueryParameter("model", getModelName());
         return uriBuilder.build();
