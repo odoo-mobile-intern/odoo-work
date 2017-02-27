@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,8 +114,9 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
             odoo.updateRecord("project.teams", values, teamId, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
-                    //todo goto dashboard
-                    Log.e(">>", response + "<<<");
+                    //Log.e(">>", response + "<<<");
+                    startActivity(new Intent(WizardAddTeamMembers.this, HomeActivity.class));
+                    finish();
                 }
             });
         }
