@@ -38,6 +38,7 @@ public class BaseContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String order) {
         OModel model = getModel(getContext(), uri);
+        setMatcher(model);
         SQLiteDatabase db = model.getWritableDatabase();
         Cursor cr = db.query(model.getTableName(), projection, selection, selectionArgs, null, null, order);
         Context ctx = getContext();

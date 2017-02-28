@@ -22,6 +22,9 @@ public class ListRow extends HashMap<String, Object> {
                 case Cursor.FIELD_TYPE_FLOAT:
                     put(column, cursor.getFloat(index));
                     break;
+                case Cursor.FIELD_TYPE_NULL:
+                    put(column, false);
+                    break;
             }
         }
     }
@@ -36,5 +39,9 @@ public class ListRow extends HashMap<String, Object> {
 
     public float getFloat(String key) {
         return containsKey(key) ? Float.parseFloat(get(key) + "") : null;
+    }
+
+    public boolean getBoolean(String key) {
+        return getString(key).equals("true");
     }
 }
