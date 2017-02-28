@@ -452,7 +452,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
                         if (!(res.get("uid") instanceof Boolean)) {
                             res.put("username", login); // FIX for 10.0+
                             bindOdooSession(res);
-                            generateUserObject(login, password, res.getString("db"), callback,
+                            generateUserObject(login, password, res.getString("db"), res, callback,
                                     null);
                         }
                     }
@@ -475,7 +475,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         if (!(userResult.get("uid") instanceof Boolean)) {
             userResult.put("username", username);
             bindOdooSession(userResult);
-            generateUserObject(username, password, database, null, response);
+            generateUserObject(username, password, database, userResult, null, response);
             if (response.getObject() != null)
                 return (OUser) response.getObject();
         }
@@ -516,7 +516,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
                         if (!(res.get("uid") instanceof Boolean)) {
                             res.put("username", username); // FIX for 10.0+
                             bindOdooSession(res);
-                            generateUserObject(username, password, database, callback,
+                            generateUserObject(username, password, database, res, callback,
                                     backResponse);
                         }
                     }
@@ -963,7 +963,7 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
     }
 
     private void generateUserObject(String username, String password,
-                                    String db, final Object callback,
+                                    String db, final OdooResult res, final Object callback,
                                     final OdooSyncResponse backResponse) {
         final OUser[] users = new OUser[1];
         users[0] = new OUser();
@@ -982,12 +982,18 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
         if (backResponse != null) {
             OdooResult result = read("res.users", users[0].getUserId(), fields);
             users[0] = parseUserObject(users[0], result);
+            if (res.containsKey("fcm_project_id")) {
+                users[0].setFCMID(res.getString("fcm_project_id"));
+            }
             backResponse.setObject(users[0]);
         } else {
             read("res.users", users[0].getUserId(), fields, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
                     users[0] = parseUserObject(users[0], response);
+                    if (res.containsKey("fcm_project_id")) {
+                        users[0].setFCMID(res.getString("fcm_project_id"));
+                    }
                     if (callback instanceof IOdooLoginCallback)
                         ((IOdooLoginCallback) callback).onLoginSuccess(mOdoo, users[0]);
                     if (callback instanceof OdooSignUpCallback)

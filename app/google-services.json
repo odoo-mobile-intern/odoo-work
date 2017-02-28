@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "780454849753",
+    "firebase_url": "https://odoo-work.firebaseio.com",
+    "project_id": "odoo-work",
+    "storage_bucket": "odoo-work.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780454849753:android:703da0be09615fd8",
+        "android_client_info": {
+          "package_name": "com.odoo.work"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "780454849753-kkogk476bg7vmlst0r7kjemqp9a6tc0n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.odoo.work",
+            "certificate_hash": "ef34f59eceadd7d9ef21c1c0ad605d8124ed6159"
+          }
+        },
+        {
+          "client_id": "780454849753-2ilnpb8rc4dpv8p1ai3m7h7v1drgrq8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0XVhNWl2r_MA8n04f2HZa1Te2qE8LSrg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "780454849753-2ilnpb8rc4dpv8p1ai3m7h7v1drgrq8l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

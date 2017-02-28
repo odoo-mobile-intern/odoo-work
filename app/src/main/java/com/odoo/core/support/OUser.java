@@ -15,7 +15,7 @@ public class OUser {
     public static final String TAG = OUser.class.getSimpleName();
     public static final int USER_ACCOUNT_VERSION = 2;
     private Account account;
-    private String username, name, timezone, avatar, database, host, session_id;
+    private String username, name, timezone, avatar, database, host, session_id, fcm_project_id;
     private Integer userId, partnerId, companyId;
     private Boolean isActive = false, allowForceConnect = false;
     private OdooVersion odooVersion;
@@ -163,6 +163,7 @@ public class OUser {
         data.putBoolean("is_active", isActive());
         data.putBoolean("allow_force_connect", isAllowForceConnect());
         data.putString("session_id", getSession_id());
+        data.putString("fcm_project_id", getFCMId());
         if (odooVersion != null) {
             data.putAll(odooVersion.getAsBundle());
         }
@@ -199,8 +200,19 @@ public class OUser {
         if (OBundleUtils.hasKey(data, "session_id")) {
             setSession_id(data.getString("session_id"));
         }
+        if (OBundleUtils.hasKey(data, "fcm_project_id")) {
+            setFCMID(data.getString("fcm_project_id"));
+        }
         odooVersion = new OdooVersion();
         odooVersion.fillFromBundle(data);
+    }
+
+    public String getFCMId() {
+        return fcm_project_id;
+    }
+
+    public void setFCMID(String fcmid) {
+        fcm_project_id = fcmid;
     }
 
     public void setFromBundle(Bundle data) {
@@ -217,6 +229,7 @@ public class OUser {
         setHost(accMgr.getUserData(account, "host"));
         setCompanyId(Integer.parseInt(accMgr.getUserData(account, "company_id")));
         setSession_id(accMgr.getUserData(account, "session_id"));
+        setFCMID(accMgr.getUserData(account, "fcm_project_id"));
     }
 
     public String getDBName() {

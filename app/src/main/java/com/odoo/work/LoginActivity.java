@@ -4,16 +4,22 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.odoo.config.AppConfig;
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
+import com.odoo.core.rpc.helper.OArguments;
+import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.rpc.listeners.IOdooLoginCallback;
 import com.odoo.core.rpc.listeners.OdooConnectionListener;
 import com.odoo.core.rpc.listeners.OdooError;
@@ -22,6 +28,9 @@ import com.odoo.work.addons.project.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.core.support.account.DeviceAccountUtils;
 import com.odoo.work.orm.sync.SyncAdapter;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 
 public class LoginActivity extends OdooActivity implements View.OnClickListener,
@@ -104,15 +113,18 @@ public class LoginActivity extends OdooActivity implements View.OnClickListener,
     public void onLoginSuccess(Odoo odoo, OUser user) {
         this.odoo = odoo;
         if (DeviceAccountUtils.get(this).createAccount(user)) {
-            getUserData();
+            getUserData(user);
         }
     }
 
-    private void getUserData() {
+    private void getUserData(final OUser user) {
         progressDialog.setMessage(getString(R.string.msg_setting_your_account));
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+
+                registerForFCM(user);
+
                 ProjectTeams teams = new ProjectTeams(LoginActivity.this);
                 SyncAdapter adapter = teams.getSyncAdapter();
                 SyncResult result = adapter.syncModelData();
@@ -126,6 +138,23 @@ public class LoginActivity extends OdooActivity implements View.OnClickListener,
                 startSplashScreen();
             }
         }.execute();
+    }
+
+    private void registerForFCM(OUser user) {
+        if (user.getFCMId() != null && !user.getFCMId().equals("false")) {
+            try {
+                String token = FirebaseInstanceId.getInstance().getToken(user.getFCMId(),
+                        FirebaseMessaging.INSTANCE_ID_SCOPE);
+                OArguments args = new OArguments();
+                args.add(token);
+                args.add(Build.DEVICE + " " + Build.BRAND);
+                args.add("fcm");
+                OdooResult result = odoo.callMethod("mail_push.device", "add_device", args, new HashMap<String, Object>());
+                Log.e(">>>", result + "<<<");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
