@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.odoo.work.addons.project.models.ProjectTeams;
+import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.core.support.account.DeviceAccountUtils;
 

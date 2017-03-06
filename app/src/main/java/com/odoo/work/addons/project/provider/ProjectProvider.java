@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.odoo.work.addons.project.models.ProjectProject;
-import com.odoo.work.addons.project.models.ProjectTeams;
+import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.orm.data.ListRow;
 import com.odoo.work.orm.sync.provider.BaseContentProvider;
 

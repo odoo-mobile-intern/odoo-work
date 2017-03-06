@@ -2,7 +2,7 @@ package com.odoo.work.orm.models;
 
 import android.content.Context;
 
-import com.odoo.work.addons.project.models.ProjectTeams;
+import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.orm.OModel;
 import com.odoo.work.addons.project.models.ProjectProject;
 import com.odoo.work.addons.customer.model.ResPartner;

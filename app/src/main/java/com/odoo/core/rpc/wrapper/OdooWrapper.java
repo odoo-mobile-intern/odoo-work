@@ -22,6 +22,7 @@ package com.odoo.core.rpc.wrapper;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -791,9 +792,10 @@ public class OdooWrapper<T> implements Response.Listener<JSONObject> {
             params.put("args", arguments.getArray());
             params.put("kwargs", (kwargs != null)
                     ? new JSONObject(gson.toJson(kwargs)) : new JSONObject());
-            params.put("context", (context != null) ?
-                    new JSONObject(gson.toJson(updateContext(context)))
-                    : odooSession.getUserContext());
+            if (context != null) {
+                params.put("context", new JSONObject(gson.toJson(updateContext(context))));
+            }
+            Log.e(">>", params + "<<<");
             newJSONPOSTRequest(url, params, callback, backResponse);
         } catch (Exception e) {
             OdooLog.e(e, e.getMessage());

@@ -24,7 +24,7 @@ import com.odoo.core.rpc.listeners.IOdooLoginCallback;
 import com.odoo.core.rpc.listeners.OdooConnectionListener;
 import com.odoo.core.rpc.listeners.OdooError;
 import com.odoo.core.support.OUser;
-import com.odoo.work.addons.project.models.ProjectTeams;
+import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.core.support.account.DeviceAccountUtils;
 import com.odoo.work.orm.sync.SyncAdapter;

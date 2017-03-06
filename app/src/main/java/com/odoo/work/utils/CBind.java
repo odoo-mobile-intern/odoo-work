@@ -9,4 +9,5 @@ public class CBind {
             textView.setText(value);
         }
     }
+
 }

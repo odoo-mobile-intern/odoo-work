@@ -35,4 +35,16 @@
     <string name="label_app_data">App Data</string>
     <string name="msg_setting_your_account">Setting your account</string>
     <string name="title_dashboard">Dashboard</string>
+    <string name="title_new_invitation" formatted="false">%s invited you to collaborate with team %s</string>
+    <string name="team_invitation">Invitation to collaborate</string>
+    <string name="lets_collaborate">Let\'s Collaborate</string>
+    <string name="label_accept">Accept</string>
+    <string name="label_reject">Reject</string>
+    <string name="msg_invitation">%s invites you to join the team</string>
+    <string name="title_confirmation">Confirmation</string>
+    <string name="msg_are_you_sure_want_to_reject_invitation">Are you sure want to reject invitation?</string>
+    <string name="label_yes">Yes</string>
+    <string name="label_working">Working...</string>
+    <string name="msg_joining_team">Joining team.</string>
+    <string name="msg_rejecting_invitation">Rejecting invitation</string>
 </resources>

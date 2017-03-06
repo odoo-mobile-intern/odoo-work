@@ -14,7 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.odoo.work.addons.project.models.ProjectProject;
-import com.odoo.work.addons.project.models.ProjectTeams;
+import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.orm.OListAdapter;
 import com.odoo.work.orm.data.ListRow;

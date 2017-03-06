@@ -1,5 +1,6 @@
 package com.odoo.work;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import com.odoo.core.rpc.helper.ORecordValues;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.rpc.listeners.OdooResponse;
 import com.odoo.core.support.OUser;
+import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
 
 public class WizardNewTeam extends OdooActivity implements View.OnClickListener {
@@ -38,12 +40,17 @@ public class WizardNewTeam extends OdooActivity implements View.OnClickListener 
         if (!editTeamName.getText().toString().isEmpty()) {
             OUser user = OUser.current(this);
             assert user != null;
-            ORecordValues values = new ORecordValues();
+            final ORecordValues values = new ORecordValues();
             values.put("name", editTeamName.getText().toString());
             odoo.createRecord("project.teams", values, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
                     int team_id = response.getInt("result");
+                    ProjectTeams teams = new ProjectTeams(WizardNewTeam.this);
+                    ContentValues data = new ContentValues();
+                    data.put("id", team_id);
+                    data.put("name", values.getString("name"));
+                    teams.create(data);
                     addNewMembers(team_id);
                 }
             });

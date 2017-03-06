@@ -1,4 +1,4 @@
-package com.odoo.work.addons.project.models;
+package com.odoo.work.addons.teams.models;
 
 import android.content.Context;
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,11 +111,12 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
         int teamId = getIntent().getIntExtra(TEAM_ID, -1);
         if (teamId != -1) {
             ORecordValues values = new ORecordValues();
-            values.put("invitation_member_ids", new ORelValues().replace(memberIds));
-            odoo.updateRecord("project.teams", values, teamId, new OdooResponse() {
+            values.put("team_id", teamId);
+            values.put("member_ids", new ORelValues().replace(memberIds));
+            odoo.createRecord("project.team.invitation", values, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
-                    //Log.e(">>", response + "<<<");
+                    Log.e(">>", response + "<<<");
                     startActivity(new Intent(WizardAddTeamMembers.this, HomeActivity.class));
                     finish();
                 }
