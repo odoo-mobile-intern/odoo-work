@@ -18,8 +18,11 @@ import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.support.OUser;
 import com.odoo.work.R;
+import com.odoo.work.addons.teams.models.ProjectTeams;
+import com.odoo.work.orm.OColumn;
 import com.odoo.work.orm.OModel;
 import com.odoo.work.orm.models.LocalRecordState;
+import com.odoo.work.orm.models.M2MModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,6 +89,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private void syncAppData() {
         //todo
         Log.e(TAG, "App data not synced. Configuration missing");
+        SyncResult syncResult = new SyncResult();
+        syncData(new ProjectTeams(getContext()), null, syncResult);
         /*
             Base models:
                - ir.model.data
@@ -161,6 +166,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     ODomain relDomain = new ODomain();
                     relDomain.add("id", "in", new ArrayList<>(relModelIds));
                     syncData(relModelObj, relDomain, null);
+                }
+            }
+        }
+
+        // Mapping relation records with record
+        for (int record_id : recordUtils.getRecordToMap().keySet()) {
+            HashMap<String, List<Integer>> idsToMap = recordUtils.getRecordToMap().get(record_id);
+            int row_id = model.selectRowId(record_id);
+            for (String column : idsToMap.keySet()) {
+                OColumn dbColumn = model.getColumn(column);
+                OModel relModel = OModel.createInstance(dbColumn.relModel, getContext());
+                switch (dbColumn.columnType) {
+                    case MANY2MANY:
+                        M2MModel m2MModel = new M2MModel(getContext(), model, dbColumn);
+                        m2MModel.insertIds(row_id, relModel.selectRowIds(idsToMap.get(column)));
+                        break;
                 }
             }
         }

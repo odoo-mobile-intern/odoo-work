@@ -4,11 +4,13 @@ import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.odoo.core.rpc.helper.ODomain;
@@ -19,8 +21,14 @@ import com.odoo.work.orm.models.IrModel;
 import com.odoo.work.orm.models.LocalRecordState;
 import com.odoo.work.orm.models.ModelRegistry;
 import com.odoo.work.orm.sync.SyncAdapter;
+import com.odoo.work.utils.OStorageUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,6 +76,10 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
                 db.execSQL(sql);
                 Log.d(TAG, "Table created: " + model.getTableName());
             }
+            for (String table : statementBuilder.relTableQueries().keySet()) {
+                db.execSQL(statementBuilder.relTableQueries().get(table));
+                Log.d(TAG, "Table created: " + table);
+            }
         }
 
     }
@@ -97,6 +109,32 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         return uriBuilder.build();
     }
 
+    public OColumn getColumn(String column) {
+        Field field = null;
+        try {
+            field = getClass().getDeclaredField(column);
+        } catch (NoSuchFieldException e) {
+            try {
+                field = getClass().getSuperclass().getDeclaredField(column);
+            } catch (NoSuchFieldException e1) {
+            }
+        }
+        if (field != null) {
+            field.setAccessible(true);
+            if (field.getType().isAssignableFrom(OColumn.class)) {
+                try {
+                    OColumn columnObj = (OColumn) field.get(this);
+                    if (columnObj.name == null)
+                        columnObj.name = field.getName();
+                    return columnObj;
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
     public List<OColumn> getColumns() {
         List<OColumn> columnList = new ArrayList<>();
         List<Field> fieldList = new ArrayList<>();
@@ -109,7 +147,8 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
             if (field.getType().isAssignableFrom(OColumn.class)) {
                 try {
                     OColumn column = (OColumn) field.get(this);
-                    column.name = field.getName();
+                    if (column.name == null)
+                        column.name = field.getName();
                     columnList.add(column);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -176,6 +215,21 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         return select(null);
     }
 
+    public List<Integer> selectRowIds(List<Integer> serverIds) {
+        List<Integer> ids = new ArrayList<>();
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(getTableName(), new String[]{"_id"}, "id in ( " + TextUtils.join(",", serverIds) + ")",
+                null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                ids.add(cursor.getInt(0));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        database.close();
+        return ids;
+    }
+
     public int selectRowId(int server_id) {
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.query(getTableName(), new String[]{"_id"}, "id = ? ",
@@ -187,6 +241,21 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         database.close();
         cursor.close();
         return row_id;
+    }
+
+    public List<Integer> selectRowIds(String relColumn, String where, String... args) {
+        List<Integer> ids = new ArrayList<>();
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(getTableName(), new String[]{relColumn}, where, args,
+                null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                ids.add(cursor.getInt(0));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        cursor.close();
+        return ids;
     }
 
     public List<Integer> selectServerIds(String where, String... args) {
@@ -211,7 +280,7 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         Cursor cursor = database.query(getTableName(), null, where, args, null, null, "_id DESC");
         if (cursor.moveToFirst()) {
             do {
-                rows.add(new ListRow(cursor));
+                rows.add(new ListRow(this, cursor));
             } while (cursor.moveToNext());
         }
 
@@ -238,9 +307,8 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
             update(values, where, args);
             return row.getInt(_ID);
         } else {
-            create(values);
+            return create(values);
         }
-        return 0;
     }
 
     public ContentProviderResult[] batchInsert(List<ContentValues> values) {
@@ -325,5 +393,38 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
 
     public Context getContext() {
         return mContext;
+    }
+
+//    public String databaseLocalPath() {
+//        Application app = (Application) mContext.getApplicationContext();
+//        return app.getDatabasePath(getDatabaseName());
+//        return Environment.getDataDirectory().getPath() +
+//                "/data/" + app.getPackageName() + "/databases/" + getDatabaseName();
+//    }
+
+    public void exportDB() {
+        FileChannel source;
+        FileChannel destination;
+//        String currentDBPath = databaseLocalPath();
+        String backupDBPath = OStorageUtils.getDirectoryPath("file")
+                + "/" + getDatabaseName();
+        File currentDB = getContext().getDatabasePath(getDatabaseName());
+        File backupDB = new File(backupDBPath);
+        try {
+            source = new FileInputStream(currentDB).getChannel();
+            destination = new FileOutputStream(backupDB).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            source.close();
+            destination.close();
+            String subject = "Database Export: " + getDatabaseName();
+            Uri uri = Uri.fromFile(backupDB);
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, uri);
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.setType("message/rfc822");
+            mContext.startActivity(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

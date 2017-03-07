@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.odoo.work.orm.OModel;
+import com.odoo.work.orm.models.M2MModel;
 import com.odoo.work.orm.models.ModelRegistry;
 
 public class BaseContentProvider extends ContentProvider {
@@ -20,6 +21,12 @@ public class BaseContentProvider extends ContentProvider {
     public UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     public OModel getModel(Context context, Uri uri) {
+        if (uri.getQueryParameter("type") != null) {
+            if (uri.getQueryParameter("type").equals("many_to_many")) {
+                OModel baseModel = ModelRegistry.getModel(context, uri.getQueryParameter("base_model"));
+                return new M2MModel(context, baseModel, baseModel.getColumn(uri.getQueryParameter("base_column")));
+            }
+        }
         return ModelRegistry.getModel(context, uri.getQueryParameter("model"));
     }
 

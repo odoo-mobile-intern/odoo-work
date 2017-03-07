@@ -6,6 +6,7 @@ import android.content.SyncResult;
 import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
 import com.odoo.work.orm.OColumn;
 import com.odoo.work.orm.OModel;
+import com.odoo.work.utils.DataUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class OdooRecordUtils {
     private List<OColumn> columns = new ArrayList<>();
     private List<ContentValues> recordValuesToUpdate = new ArrayList<>();
     private List<ContentValues> recordValuesToInsert = new ArrayList<>();
+    private HashMap<Integer, HashMap<String, List<Integer>>> recordToMap = new HashMap<>();
     private HashMap<String, HashSet<Integer>> relationRecordToSync = new HashMap<>();
 
     public static OdooRecordUtils getInstance(OModel model, SyncResult syncResult) {
@@ -54,7 +56,6 @@ public class OdooRecordUtils {
                         Integer m2o_row_id = null;
                         if (m2o != null) {
                             OModel m2oModel = model.createModel(column.relModel);
-
                             ContentValues m2oValues = new ContentValues();
                             m2oValues.put("id", m2o.getDouble("id").intValue());
                             m2oValues.put("name", m2o.getString("name"));
@@ -64,6 +65,15 @@ public class OdooRecordUtils {
                             }
                         }
                         values.put(column.name, m2o_row_id);
+                        break;
+                    case MANY2MANY:
+                        List<Integer> ids = DataUtils.getDoubletToInt(record.getArray(column.name));
+                        for (int id : ids) {
+                            addRelRecordToSync(column.relModel, id);
+                        }
+                        HashMap<String, List<Integer>> idsMap = new HashMap<>();
+                        idsMap.put(column.name, ids);
+                        recordToMap.put(record.getInt("id"), idsMap);
                         break;
                     // TODO : Many to Many and One To Many
                 }
@@ -97,5 +107,9 @@ public class OdooRecordUtils {
 
     public HashMap<String, HashSet<Integer>> getRelationRecordToSync() {
         return relationRecordToSync;
+    }
+
+    public HashMap<Integer, HashMap<String, List<Integer>>> getRecordToMap() {
+        return recordToMap;
     }
 }

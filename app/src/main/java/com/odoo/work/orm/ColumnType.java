@@ -27,7 +27,8 @@ public enum ColumnType {
     BOOLEAN("BOOLEAN"),
     BLOB("BLOB"),
     MANY2ONE("INTEGER"),
-    DATETIME("VARCHAR");
+    DATETIME("VARCHAR"),
+    MANY2MANY("MANY2MANY");
 
     String type;
 

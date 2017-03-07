@@ -2,11 +2,24 @@ package com.odoo.work.orm.data;
 
 import android.database.Cursor;
 
+import com.odoo.work.orm.OColumn;
+import com.odoo.work.orm.OModel;
+import com.odoo.work.orm.models.M2MModel;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ListRow extends HashMap<String, Object> {
-    public ListRow(Cursor cursor) {
 
+    private OModel baseModel;
+
+    public ListRow(Cursor cursor) {
+        this(null, cursor);
+    }
+
+    public ListRow(OModel model, Cursor cursor) {
+        this.baseModel = model;
         for (String column : cursor.getColumnNames()) {
             int index = cursor.getColumnIndex(column);
             switch (cursor.getType(index)) {
@@ -43,5 +56,17 @@ public class ListRow extends HashMap<String, Object> {
 
     public boolean getBoolean(String key) {
         return getString(key).equals("true");
+    }
+
+    public List<ListRow> getM2M(String key) {
+        List<ListRow> items = new ArrayList<>();
+        if (baseModel != null) {
+            OColumn column = baseModel.getColumn(key);
+            if (column != null) {
+                M2MModel m2MModel = new M2MModel(baseModel.getContext(), baseModel, column);
+                items.addAll(m2MModel.browseRecords(getInt("_id")));
+            }
+        }
+        return items;
     }
 }

@@ -29,8 +29,9 @@ import com.odoo.work.utils.CBind;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.odoo.work.utils.DataUtils.getDoubletToInt;
 
 public class InvitationAccept extends OdooActivity implements View.OnClickListener {
 
@@ -105,8 +106,8 @@ public class InvitationAccept extends OdooActivity implements View.OnClickListen
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle(R.string.label_working);
 
-        List<Integer> invitation_ids = getFloatToInt(teamData.getArray("invitation_member_ids"));
-        List<Integer> team_member_ids = getFloatToInt(teamData.getArray("team_member_ids"));
+        List<Integer> invitation_ids = getDoubletToInt(teamData.getArray("invitation_member_ids"));
+        List<Integer> team_member_ids = getDoubletToInt(teamData.getArray("team_member_ids"));
         ORecordValues values = new ORecordValues();
         if (accepted) {
             progressDialog.setMessage(getString(R.string.msg_joining_team));
@@ -162,14 +163,6 @@ public class InvitationAccept extends OdooActivity implements View.OnClickListen
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private List<Integer> getFloatToInt(List<Double> ids) {
-        List<Integer> newIds = new ArrayList<>();
-        for (Double id : ids) {
-            newIds.add(id.intValue());
-        }
-        return newIds;
     }
 
 }
