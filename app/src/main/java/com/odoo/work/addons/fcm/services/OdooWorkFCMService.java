@@ -30,7 +30,7 @@ public class OdooWorkFCMService extends FirebaseMessagingService {
 
     private void processProjectTeams(HashMap<String, String> data) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.drawable.ic_stat_group_work);
         builder.setDefaults(Notification.DEFAULT_ALL);
         int team_id = Integer.parseInt(data.get("res_id"));
         if (data.containsKey("type") && data.get("type").equals("invitation")) {
