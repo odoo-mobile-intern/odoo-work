@@ -52,6 +52,7 @@ public class SplashScreen extends OdooActivity {
                 } else {
                     startActivity(new Intent(SplashScreen.this, HomeActivity.class));
                 }
+                finish();
             }
         }.execute();
     }

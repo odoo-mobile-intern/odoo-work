@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,7 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
         AdapterView.OnItemClickListener {
 
     public static final String TEAM_ID = "team_id";
+    public static final String KEY_SET_RESULT = "key_set_result";
     private ArrayList<Bundle> arrayList = new ArrayList<>();
     private ArrayAdapter<Bundle> arrayAdapter;
     private ListView memberListView;
@@ -37,7 +37,7 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_add_members);
-
+        setResult(RESULT_CANCELED);
         try {
             odoo = Odoo.createWithUser(this, OUser.current(this));
         } catch (OdooVersionException e) {
@@ -116,8 +116,11 @@ public class WizardAddTeamMembers extends AppCompatActivity implements View.OnCl
             odoo.createRecord("project.team.invitation", values, new OdooResponse() {
                 @Override
                 public void onResponse(OdooResult response) {
-                    Log.e(">>", response + "<<<");
-                    startActivity(new Intent(WizardAddTeamMembers.this, HomeActivity.class));
+                    if (getIntent().getExtras().containsKey(KEY_SET_RESULT)) {
+                        setResult(RESULT_OK);
+                    } else {
+                        startActivity(new Intent(WizardAddTeamMembers.this, HomeActivity.class));
+                    }
                     finish();
                 }
             });
