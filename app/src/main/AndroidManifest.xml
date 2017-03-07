@@ -115,5 +115,6 @@
         </service>
 
         <activity android:name=".addons.teams.InvitationAccept" />
+        <activity android:name=".addons.teams.TeamDetailView" />
     </application>
 </manifest>

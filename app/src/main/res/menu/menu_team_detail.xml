@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_delete_team"
+        android:icon="@drawable/ic_delete_black"
+        android:title="@string/title_delete_team"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_leave_team"
+        android:title="@string/title_leave_team"
+        android:visible="false"
+        app:showAsAction="always" />
+
+</menu>

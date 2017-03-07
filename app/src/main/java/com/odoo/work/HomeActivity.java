@@ -1,9 +1,11 @@
 package com.odoo.work;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -14,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.odoo.work.addons.project.models.ProjectProject;
+import com.odoo.work.addons.teams.TeamDetailView;
 import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.orm.OListAdapter;
@@ -58,12 +61,22 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
     }
 
     @Override
-    public void onViewBind(View view, Cursor cursor, ListRow row) {
+    public void onViewBind(View view, Cursor cursor, final ListRow row) {
         CBind.setText((TextView) view.findViewById(R.id.display_name), row.getString("display_name"));
         if (!row.getBoolean("is_team")) {
             view.findViewById(R.id.projectColor)
                     .setBackgroundColor(Color.parseColor(ProjectProject.COLORS[row.getInt("color")]));
+        } else {
+            view.findViewById(R.id.teamDetailView).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent detailView = new Intent(HomeActivity.this, TeamDetailView.class);
+                    detailView.putExtra(TeamDetailView.KEY_TEAM_ID, row.getInt(BaseColumns._ID));
+                    startActivity(detailView);
+                }
+            });
         }
+
     }
 
     @Override

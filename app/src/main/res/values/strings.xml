@@ -47,4 +47,7 @@
     <string name="label_working">Working...</string>
     <string name="msg_joining_team">Joining team.</string>
     <string name="msg_rejecting_invitation">Rejecting invitation</string>
+    <string name="title_delete_team">Delete team</string>
+    <string name="label_members">Members</string>
+    <string name="title_leave_team">Leave</string>
 </resources>

@@ -211,6 +211,11 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         return count;
     }
 
+    public ListRow browse(int row_id) {
+        List<ListRow> rows = select("_id = ?", row_id + "");
+        return rows.isEmpty() ? null : rows.get(0);
+    }
+
     public List<ListRow> select() {
         return select(null);
     }
