@@ -13,5 +13,6 @@
     <color name="colorWhite">#FFFFFF</color>
 
     <color name="colorDivider">#BDBDBD</color>
+    <color name="red_dark">#F34235</color>
 
 </resources>

@@ -139,7 +139,7 @@ public class InvitationAccept extends OdooActivity implements View.OnClickListen
         });
     }
 
-    private void subscribeToTeam(int team_id) {
+    private void subscribeToTeam(final int team_id) {
         try {
             OUser user = OUser.current(this);
             OArguments args = new OArguments();
@@ -160,6 +160,7 @@ public class InvitationAccept extends OdooActivity implements View.OnClickListen
                     progressDialog.dismiss();
                 }
             });
+
         } catch (Exception e) {
             e.printStackTrace();
         }

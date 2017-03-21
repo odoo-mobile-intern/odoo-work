@@ -69,4 +69,14 @@ public class ListRow extends HashMap<String, Object> {
         }
         return items;
     }
+
+    public ListRow getM2O(String key) {
+        if (baseModel != null) {
+            OColumn column = baseModel.getColumn(key);
+            if (column != null) {
+                return baseModel.createModel(column.relModel).browse(getInt(key));
+            }
+        }
+        return null;
+    }
 }

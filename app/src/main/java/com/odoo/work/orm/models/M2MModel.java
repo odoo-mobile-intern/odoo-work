@@ -58,6 +58,11 @@ public class M2MModel extends OModel {
         }
     }
 
+    public void replaceIds(int base_id, List<Integer> relIds) {
+        delete(baseColumn.name + " =? ", base_id + "");
+        insertIds(base_id, relIds);
+    }
+
     public List<ListRow> browseRecords(int base_id) {
         List<Integer> ids = new ArrayList<>();
         ids.addAll(selectRowIds(getRelColumn(), getBaseColumn() + " = ? ", base_id + ""));

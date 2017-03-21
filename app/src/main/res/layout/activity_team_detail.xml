@@ -17,13 +17,14 @@
             android:layout_height="wrap_content"
             android:background="@color/colorWhite"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="@dimen/default_8dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingLeft="@dimen/default_16dp"
+                android:paddingLeft="@dimen/default_8dp"
                 android:text="@string/label_members"
                 android:textAllCaps="true"
                 android:textColor="#414141"
@@ -33,7 +34,6 @@
                 android:id="@+id/addMember"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/default_8dp"
                 android:src="@drawable/ic_add_black" />
 
         </LinearLayout>
@@ -46,7 +46,22 @@
         <ListView
             android:id="@+id/memberList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/default_16dp" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/leaveTeam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/red_dark"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/default_16dp"
+        android:text="@string/label_leave_team"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/colorWhite" />
 </LinearLayout>

@@ -26,7 +26,7 @@ import com.odoo.work.utils.CBind;
 import com.odoo.work.utils.OAppBarUtils;
 
 public class HomeActivity extends OdooActivity implements OListAdapter.OnNewViewInflateListener, OListAdapter.OnViewBindInflateListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     private ProjectTeams projectTeams;
     private ProjectProject projectProject;
@@ -50,6 +50,7 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
         adapter.setViewBindInflateListener(this);
         teamsWithProjects.setAdapter(adapter);
         getSupportLoaderManager().initLoader(0, null, this);
+        findViewById(R.id.addNewProject).setOnClickListener(this);
     }
 
     @Override
@@ -66,7 +67,8 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
         if (!row.getBoolean("is_team")) {
             view.findViewById(R.id.projectColor)
                     .setBackgroundColor(Color.parseColor(ProjectProject.COLORS[row.getInt("color")]));
-        } else {
+        } else if (view.findViewById(R.id.teamDetailView) != null) {
+            view.findViewById(R.id.teamDetailView).setVisibility((row.getInt("_id") == -99) ? View.GONE : View.VISIBLE);
             view.findViewById(R.id.teamDetailView).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -98,5 +100,16 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
     protected void onResume() {
         super.onResume();
         OSyncUtils.get(this, projectProject).sync(new Bundle());
+        OSyncUtils.get(this, new ProjectTeams(this)).sync(new Bundle());
+        getSupportLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.addNewProject:
+                //TODO: Add new project wizard.
+                break;
+        }
     }
 }

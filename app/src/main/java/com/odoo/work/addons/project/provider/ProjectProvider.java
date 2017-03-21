@@ -40,7 +40,7 @@ public class ProjectProvider extends BaseContentProvider {
         // loading personal projects
         List<ListRow> personalProjects = projectProject.select("team_id is NULL");
         if (!personalProjects.isEmpty()) {
-            matrixCursor.addRow(new Object[]{"-1", "-1", "Personal", true, null});
+            matrixCursor.addRow(new Object[]{"-99", "-1", "Personal", true, null});
             addProjects(personalProjects, matrixCursor);
         }
 

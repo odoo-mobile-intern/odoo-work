@@ -5,15 +5,18 @@ import android.content.ContentProviderResult;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SyncResult;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.odoo.core.rpc.helper.ODomain;
+import com.odoo.core.support.OUser;
 import com.odoo.core.utils.ODateUtils;
 import com.odoo.work.R;
 import com.odoo.work.orm.data.ListRow;
@@ -44,6 +47,7 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
             .makeAutoIncrement().makeLocal();
     OColumn id = new OColumn("Server Id", ColumnType.INTEGER);
     OColumn write_date = new OColumn("Write date", ColumnType.DATETIME).makeLocal().setDefaultValue("false");
+    OColumn create_uid = new OColumn("Owner", ColumnType.MANY2ONE, "res.users");
     OColumn is_dirty = new OColumn("Is dirty", ColumnType.BOOLEAN).makeLocal().setDefaultValue("false");
     private String mModelName;
     private Context mContext;
@@ -189,6 +193,20 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
 
         SQLiteDatabase database = getWritableDatabase();
         int id = database.delete(getTableName(), where, args);
+        database.close();
+        return id;
+    }
+
+    public int deleteAll(List<Integer> serverIds) {
+        SQLiteDatabase database = getWritableDatabase();
+        int id = database.delete(getTableName(), "id in (" + TextUtils.join(",", serverIds) + ")", null);
+        database.close();
+        return id;
+    }
+
+    public int delete(int row_id, boolean permenent) {
+        SQLiteDatabase database = getWritableDatabase();
+        int id = database.delete(getTableName(), "_id = ?", new String[]{row_id + ""});
         database.close();
         return id;
     }
@@ -432,4 +450,14 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
             e.printStackTrace();
         }
     }
+
+    public OUser getUser() {
+        return OUser.current(mContext);
+    }
+
+    public void syncData() {
+        SyncAdapter adapter = new SyncAdapter(mContext, true, this);
+        adapter.onPerformSync(getUser().getAccount(), new Bundle(), getAuthority(), null, new SyncResult());
+    }
+
 }

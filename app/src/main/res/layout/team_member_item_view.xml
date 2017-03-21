@@ -44,4 +44,5 @@
         android:padding="@dimen/default_8dp"
         android:src="@drawable/ic_clear_black"
         android:tint="#cc0000" />
+
 </LinearLayout>

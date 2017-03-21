@@ -180,7 +180,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 switch (dbColumn.columnType) {
                     case MANY2MANY:
                         M2MModel m2MModel = new M2MModel(getContext(), model, dbColumn);
-                        m2MModel.insertIds(row_id, relModel.selectRowIds(idsToMap.get(column)));
+                        m2MModel.replaceIds(row_id, relModel.selectRowIds(idsToMap.get(column)));
                         break;
                 }
             }
@@ -214,7 +214,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             serverIds.add(record.getDouble("id").intValue());
         }
         checkIds.removeAll(serverIds);
-        int deleted = model.delete("id in (" + TextUtils.join(", ", checkIds) + ")");
+        int deleted = model.deleteAll(new ArrayList<>(checkIds));
         if (syncResult != null) syncResult.stats.numDeletes += deleted;
     }
 
