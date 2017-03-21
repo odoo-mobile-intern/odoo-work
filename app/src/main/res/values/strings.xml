@@ -62,4 +62,7 @@
     <string name="remove_team">Are you sure want to remove team? It can not be undone after remove.</string>
     <string name="title_removing_team">Removing team…</string>
     <string name="toast_team_removed">Team removed</string>
+    <string name="title_create_project">Create Project</string>
+    <string name="spinner_title">Select Team</string>
+    <string name="error_enter_project_name">Please Enter project Name</string>
 </resources>
