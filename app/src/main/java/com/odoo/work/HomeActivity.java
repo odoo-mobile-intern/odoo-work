@@ -25,7 +25,13 @@ import android.widget.Toast;
 
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.handler.OdooVersionException;
+import com.odoo.core.rpc.helper.ODomain;
+import com.odoo.core.rpc.helper.ORecordValues;
 import com.odoo.core.rpc.helper.OdooFields;
+import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
+import com.odoo.core.rpc.helper.utils.gson.OdooResult;
+import com.odoo.core.rpc.listeners.OdooError;
+import com.odoo.core.rpc.listeners.OdooResponse;
 import com.odoo.core.support.OUser;
 import com.odoo.work.addons.project.models.ProjectProject;
 import com.odoo.work.addons.teams.TeamDetailView;
@@ -138,7 +144,6 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
                 final View promptsView = li.inflate(R.layout.create_project_view, null);
                 spinner = (Spinner) promptsView.findViewById(R.id.spinner);
                 editText = (EditText) promptsView.findViewById(R.id.editTextDialogUserInput);
-                OdooFields odooFields = new OdooFields("name");
                 List<String> teams = new ArrayList<>();
                 teams.add("No team");
                 List<ListRow> rows = projectTeams.select();
@@ -174,7 +179,8 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
                                         if (isValid()) {
 
                                             Log.e(">>>", spinner.getSelectedItem().toString());
-                                        }
+                                            addproject(editText.getText().toString(),spinner.getSelectedItem().toString());
+                                        }else
                                         {
                                             Toast.makeText(HomeActivity.this, "Project Name is Empty", Toast.LENGTH_SHORT).show();
                                         }
@@ -187,11 +193,47 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
                                     }
                                 });
                 alertDialog.show();
-
-                //TODO: Add new project wizard.
                 break;
         }
 
+    }
+
+    private void addproject(String projectname, String teamname) {
+        final Double[] temp_team_id = new Double[1];
+        OdooFields fields = new OdooFields("id");
+        ODomain domain = new ODomain();
+        domain.add("name", "=",teamname);
+        odoo.searchRead("project.teams", fields, domain, 0, 0, null, new OdooResponse() {
+
+            @Override
+            public void onResponse(OdooResult response) {
+                Log.e(">>>res ", response+"");
+                List<OdooRecord> records = response.getRecords();
+                for (OdooRecord record : records) {
+                temp_team_id[0] = record.getDouble("id");
+                }
+
+
+            }
+        });
+
+        ORecordValues values = new ORecordValues();
+        values.put("name", projectname);
+        values.put("team_id", temp_team_id[0]);
+        odoo.createRecord("project.project", values, new OdooResponse() {
+
+            @Override
+            public void onResponse(OdooResult response) {
+                Log.e(">>>>Sucess",response+" ");
+            }
+
+            @Override
+            public void onError(OdooError error) {
+                super.onError(error);
+                Log.e("error ", error+"");
+            }
+        });
+        
     }
 
     @Override
@@ -207,10 +249,7 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
 
     private boolean isValid() {
 
-        editText.setError(null);
         if (editText.getText().toString().trim().isEmpty()) {
-            editText.setError(getString(R.string.error_enter_project_name));
-            editText.setFocusable(true);
             return false;
         }
         return true;

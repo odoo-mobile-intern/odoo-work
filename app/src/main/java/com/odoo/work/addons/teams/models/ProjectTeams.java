@@ -10,6 +10,7 @@ public class ProjectTeams extends OModel {
     public static final String TAG = ProjectTeams.class.getSimpleName();
 
     OColumn name = new OColumn("Team Name", ColumnType.VARCHAR);
+    OColumn team_id = new OColumn("Team ID", ColumnType.MANY2ONE);
     OColumn team_member_ids = new OColumn("Team members", ColumnType.MANY2MANY, "res.partner")
             .setBaseColumn("team_id")
             .setRelColumn("partner_id")
