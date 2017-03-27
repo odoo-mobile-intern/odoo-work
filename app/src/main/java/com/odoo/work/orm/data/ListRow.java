@@ -14,6 +14,10 @@ public class ListRow extends HashMap<String, Object> {
 
     private OModel baseModel;
 
+    public ListRow() {
+
+    }
+
     public ListRow(Cursor cursor) {
         this(null, cursor);
     }

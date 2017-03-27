@@ -65,4 +65,9 @@
     <string name="title_create_project">Create Project</string>
     <string name="spinner_title">Select Team</string>
     <string name="error_enter_project_name">Please Enter project Name</string>
+    <string name="label_no_team">No team</string>
+    <string name="label_create">Create</string>
+    <string name="toast_project_name_required">Project Name required</string>
+    <string name="hint_project_name">Project Name</string>
+    <string name="msg_creating_project">Creating project...</string>
 </resources>

@@ -2,15 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
+    android:paddingRight="@dimen/default_16dp"
+    android:paddingLeft="@dimen/default_16dp"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="vertical">
 
     <EditText
         android:id="@+id/editTextDialogUserInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Project Name"
+        android:hint="@string/hint_project_name"
         android:padding="@dimen/default_16dp">
 
         <requestFocus />
@@ -19,8 +20,6 @@
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/default_16dp"
-        android:prompt="@string/spinner_title"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
