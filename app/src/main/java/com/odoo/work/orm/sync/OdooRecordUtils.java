@@ -41,6 +41,7 @@ public class OdooRecordUtils {
                     case DATETIME:
                     case VARCHAR:
                     case BLOB:
+                    case TEXT:
                         values.put(column.name, record.getString(column.name));
                         break;
                     case BOOLEAN:

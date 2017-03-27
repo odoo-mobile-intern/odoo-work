@@ -104,6 +104,10 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         return mContext.getString(R.string.main_authority);
     }
 
+    public String authority() {
+        return getAuthority() + "_" + getModelName();
+    }
+
     public Uri getUri() {
         Uri.Builder uriBuilder = new Uri.Builder();
         uriBuilder.authority(getAuthority());
@@ -230,12 +234,12 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
     }
 
     public ListRow browse(int row_id) {
-        List<ListRow> rows = select("_id = ?", row_id + "");
+        List<ListRow> rows = select("_id = ?", new String[]{row_id + ""});
         return rows.isEmpty() ? null : rows.get(0);
     }
 
     public List<ListRow> select() {
-        return select(null);
+        return select(null, null);
     }
 
     public List<Integer> selectRowIds(List<Integer> serverIds) {
@@ -296,14 +300,19 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         return ids;
     }
 
-    public List<ListRow> select(String where, String... args) {
+    public List<ListRow> select(String where, String[] args) {
+        return select(null, null, where, where != null && args == null ? new String[]{} : args);
+    }
+
+    public List<ListRow> select(String[] projection, String orderBy, String where, String... args) {
         List<ListRow> rows = new ArrayList<>();
         SQLiteDatabase database = getReadableDatabase();
-        args = args.length > 0 ? args : null;
-        Cursor cursor = database.query(getTableName(), null, where, args, null, null, "_id DESC");
+        args = args != null && args.length > 0 ? args : null;
+        orderBy = orderBy == null ? "_id DESC" : orderBy;
+        Cursor cursor = database.query(getTableName(), projection, where, args, null, null, orderBy);
         if (cursor.moveToFirst()) {
             do {
-                rows.add(new ListRow(this, cursor));
+                rows.add(new ListRow(cursor));
             } while (cursor.moveToNext());
         }
 
@@ -381,7 +390,7 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
 
     public String getLastSyncDate() {
         IrModel model = new IrModel(mContext);
-        List<ListRow> items = model.select("model = ?", getModelName());
+        List<ListRow> items = model.select("model = ?", new String[]{getModelName()});
         if (!items.isEmpty()) {
             return items.get(0).getString("last_sync_on");
         }
@@ -449,6 +458,11 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getName(int row_id) {
+        ListRow row = browse(row_id);
+        return row != null ? row.getString("name") : "false";
     }
 
     public OUser getUser() {

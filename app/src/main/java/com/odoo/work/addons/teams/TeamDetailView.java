@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.helper.OArguments;
 import com.odoo.core.support.OUser;
+import com.odoo.widget.chatter.ChatterView;
 import com.odoo.work.R;
 import com.odoo.work.WizardAddTeamMembers;
 import com.odoo.work.addons.teams.models.ProjectTeams;
@@ -67,6 +68,8 @@ public class TeamDetailView extends OdooActivity implements View.OnClickListener
             findViewById(R.id.addMember).setVisibility(View.GONE);
         }
         bindMembers();
+        ChatterView chatterView = (ChatterView) findViewById(R.id.chatterView);
+        chatterView.loadChatter(teams, teamData.getInt("id"));
     }
 
     private void bindMembers() {

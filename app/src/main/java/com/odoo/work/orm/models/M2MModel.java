@@ -66,6 +66,6 @@ public class M2MModel extends OModel {
     public List<ListRow> browseRecords(int base_id) {
         List<Integer> ids = new ArrayList<>();
         ids.addAll(selectRowIds(getRelColumn(), getBaseColumn() + " = ? ", base_id + ""));
-        return relModel.select("_id in (" + TextUtils.join(", ", ids) + ")");
+        return relModel.select("_id in (" + TextUtils.join(", ", ids) + ")", null);
     }
 }
