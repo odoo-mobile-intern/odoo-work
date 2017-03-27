@@ -28,6 +28,7 @@ import com.odoo.core.rpc.handler.OdooVersionException;
 import com.odoo.core.rpc.helper.ORecordValues;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.support.OUser;
+import com.odoo.work.addons.project.ProjectDetail;
 import com.odoo.work.addons.project.models.ProjectProject;
 import com.odoo.work.addons.teams.TeamDetailView;
 import com.odoo.work.addons.teams.models.ProjectTeams;
@@ -90,6 +91,14 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
         if (!row.getBoolean("is_team")) {
             view.findViewById(R.id.projectColor)
                     .setBackgroundColor(Color.parseColor(ProjectProject.COLORS[row.getInt("color")]));
+            view.findViewById(R.id.display_name).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent projectDetailView = new Intent(HomeActivity.this, ProjectDetail.class);
+                    startActivity(projectDetailView);
+                }
+            });
+
         } else if (view.findViewById(R.id.teamDetailView) != null) {
             view.findViewById(R.id.teamDetailView).setVisibility((row.getInt("_id") == -99) ? View.GONE : View.VISIBLE);
             view.findViewById(R.id.teamDetailView).setOnClickListener(new View.OnClickListener() {
