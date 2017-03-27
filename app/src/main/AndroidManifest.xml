@@ -119,7 +119,6 @@
 
         <activity android:name=".addons.teams.InvitationAccept" />
         <activity android:name=".addons.teams.TeamDetailView" />
-
-
+        <activity android:name=".addons.project.ProjectDetail" />
     </application>
 </manifest>
