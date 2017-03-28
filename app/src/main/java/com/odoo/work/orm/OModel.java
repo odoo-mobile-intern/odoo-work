@@ -312,7 +312,7 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         Cursor cursor = database.query(getTableName(), projection, where, args, null, null, orderBy);
         if (cursor.moveToFirst()) {
             do {
-                rows.add(new ListRow(cursor));
+                rows.add(new ListRow(this, cursor));
             } while (cursor.moveToNext());
         }
 

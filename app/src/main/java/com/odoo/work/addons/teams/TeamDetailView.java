@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -13,8 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +19,7 @@ import com.odoo.core.rpc.Odoo;
 import com.odoo.core.rpc.helper.OArguments;
 import com.odoo.core.support.OUser;
 import com.odoo.widget.chatter.ChatterView;
+import com.odoo.widget.list.ExpandableListControl;
 import com.odoo.work.R;
 import com.odoo.work.WizardAddTeamMembers;
 import com.odoo.work.addons.teams.models.ProjectTeams;
@@ -43,7 +41,7 @@ public class TeamDetailView extends OdooActivity implements View.OnClickListener
     public static final int REQUEST_ADD_MEMBER = 1;
     private ProjectTeams teams;
     private ListRow teamData;
-    private ArrayAdapter<ListRow> adapter;
+    private ExpandableListControl.ExpandableListAdapter adapter;
     private List<ListRow> members = new ArrayList<>();
     private boolean isOwner = false;
     private OUser mUser;
@@ -73,14 +71,15 @@ public class TeamDetailView extends OdooActivity implements View.OnClickListener
     }
 
     private void bindMembers() {
-        adapter = new ArrayAdapter<ListRow>(this, R.layout.team_member_item_view, members) {
-            @NonNull
+        ExpandableListControl memberList = (ExpandableListControl) findViewById(R.id.memberList);
+        adapter = memberList.getAdapter(R.layout.team_member_item_view, members, new ExpandableListControl
+                .ExpandableListAdapterGetViewListener() {
             @Override
-            public View getView(final int position, @Nullable View view, @NonNull ViewGroup parent) {
+            public View getView(final int position, View view, ViewGroup parent, final ExpandableListControl.ExpandableListAdapter adapter) {
                 if (view == null) {
                     view = LayoutInflater.from(TeamDetailView.this).inflate(R.layout.team_member_item_view, parent, false);
                 }
-                ListRow row = getItem(position);
+                ListRow row = (ListRow) adapter.getItem(position);
                 if (!row.getString("image_medium").equals("false")) {
                     CBind.setImage(view.findViewById(R.id.userAvatar), BitmapUtils.getBitmapImage(view.getContext(),
                             row.getString("image_medium")));
@@ -93,15 +92,12 @@ public class TeamDetailView extends OdooActivity implements View.OnClickListener
                 view.findViewById(R.id.removeMember).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        removeMember(getItem(position));
+                        removeMember((ListRow) adapter.getItem(position));
                     }
                 });
                 return view;
             }
-        };
-
-        ListView memberList = (ListView) findViewById(R.id.memberList);
-        memberList.setAdapter(adapter);
+        });
         showMembers();
     }
 
@@ -131,7 +127,7 @@ public class TeamDetailView extends OdooActivity implements View.OnClickListener
                 }
             }
         }
-        adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged(members);
     }
 
     @Override

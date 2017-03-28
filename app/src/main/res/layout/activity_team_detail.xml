@@ -6,57 +6,62 @@
 
     <include layout="@layout/toolbar_layout" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="@dimen/default_8dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingLeft="@dimen/default_8dp"
-                android:text="@string/label_members"
-                android:textAllCaps="true"
-                android:textColor="#414141"
-                android:textStyle="bold" />
+                android:background="@color/colorWhite"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/default_8dp">
 
-            <ImageView
-                android:id="@+id/addMember"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="@dimen/default_8dp"
+                    android:text="@string/label_members"
+                    android:textAllCaps="true"
+                    android:textColor="#414141"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/addMember"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add_black" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#d7d7d7" />
+
+            <com.odoo.widget.list.ExpandableListControl
+                android:id="@+id/memberList"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_add_black" />
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/default_16dp" />
 
+            <com.odoo.widget.chatter.ChatterView
+                android:id="@+id/chatterView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#d7d7d7" />
-
-        <ListView
-            android:id="@+id/memberList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/default_16dp" />
-
-    </LinearLayout>
-
-
-    <com.odoo.widget.chatter.ChatterView
-        android:id="@+id/chatterView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    </ScrollView>
 
     <TextView
         android:id="@+id/leaveTeam"
