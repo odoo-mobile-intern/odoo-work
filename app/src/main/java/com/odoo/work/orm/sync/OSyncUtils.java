@@ -2,9 +2,14 @@ package com.odoo.work.orm.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
 
 import com.odoo.work.R;
 import com.odoo.work.orm.OModel;
@@ -24,6 +29,18 @@ public class OSyncUtils {
         return new OSyncUtils(context, model);
     }
 
+    public static void onSyncFinishListener(AppCompatActivity activity, final OnSyncFinishListener callback) {
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(activity);
+        manager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getExtras().containsKey(SyncAdapter.KEY_SYNC_MODEL) && callback != null) {
+                    callback.onSyncFinish(intent.getExtras().getString(SyncAdapter.KEY_SYNC_MODEL));
+                }
+            }
+        }, new IntentFilter(SyncAdapter.ACTION_SYNC_FINISH));
+    }
+
     public void sync(Bundle data) {
         AccountManager manager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         Account[] accounts = manager.getAccountsByType(context.getString(R.string.auth_type));
@@ -38,5 +55,8 @@ public class OSyncUtils {
         }
     }
 
+    public interface OnSyncFinishListener {
+        void onSyncFinish(String model);
+    }
 
 }

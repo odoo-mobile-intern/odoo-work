@@ -131,6 +131,13 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
         OSyncUtils.get(this, new ProjectTaskType(this)).sync(new Bundle());
         OSyncUtils.get(this, new ProjectTask(this)).sync(new Bundle());
         getSupportLoaderManager().restartLoader(0, null, this);
+
+        OSyncUtils.onSyncFinishListener(this, new OSyncUtils.OnSyncFinishListener() {
+            @Override
+            public void onSyncFinish(String model) {
+                getSupportLoaderManager().restartLoader(0, null, HomeActivity.this);
+            }
+        });
     }
 
     @Override
