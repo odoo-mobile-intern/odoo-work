@@ -146,15 +146,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         // batch insert
-        model.batchInsert(recordUtils.getRecordValuesToInsert());
-        if (syncResult != null)
-            syncResult.stats.numInserts += recordUtils.getRecordValuesToInsert().size();
-
+        if (!recordUtils.getRecordValuesToInsert().isEmpty()) {
+            model.batchInsert(recordUtils.getRecordValuesToInsert());
+            if (syncResult != null)
+                syncResult.stats.numInserts += recordUtils.getRecordValuesToInsert().size();
+        }
         // batch update
-        model.batchUpdate(recordUtils.getRecordValuesToUpdate());
-        if (syncResult != null)
-            syncResult.stats.numUpdates += recordUtils.getRecordValuesToUpdate().size();
-
+        if (!recordUtils.getRecordValuesToUpdate().isEmpty()) {
+            model.batchUpdate(recordUtils.getRecordValuesToUpdate());
+            if (syncResult != null)
+                syncResult.stats.numUpdates += recordUtils.getRecordValuesToUpdate().size();
+        }
         if (!onlySync) {
             // creating list for relation records to sync
             if (recordUtils.getRelationRecordToSync().size() > 0) {
