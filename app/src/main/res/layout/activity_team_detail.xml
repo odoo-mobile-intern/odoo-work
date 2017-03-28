@@ -52,6 +52,12 @@
 
     </LinearLayout>
 
+
+    <com.odoo.widget.chatter.ChatterView
+        android:id="@+id/chatterView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/leaveTeam"
         android:layout_width="match_parent"

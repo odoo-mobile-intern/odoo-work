@@ -15,6 +15,7 @@ public class ModelRegistry {
         HashMap<String, OModel> model = new HashMap<>();
         model.put("ir.model", new IrModel(context));
         model.put("local.record.state", new LocalRecordState(context));
+        model.put("mail.message",new MailMessage(context));
         model.put("res.partner", new ResPartner(context));
         model.put("project.project", new ProjectProject(context));
         model.put("project.teams", new ProjectTeams(context));

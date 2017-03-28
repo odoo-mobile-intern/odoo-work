@@ -52,4 +52,26 @@ public class ODateUtils {
         return createDate(createDateObject(dateTime, dateFormat, true), dateFormat, true);
     }
 
+    /**
+     * Convert UTC date to default timezone date
+     *
+     * @param date       date in string
+     * @param dateFormat default date format
+     * @return string converted date string
+     */
+    public static String convertToDefault(String date, String dateFormat) {
+        return convertToDefault(date, dateFormat, dateFormat);
+    }
+
+    /**
+     * Convert UTC date to default timezone
+     *
+     * @param date       UTC date string
+     * @param dateFormat default date format
+     * @param toFormat   converting date format
+     * @return string converted date string
+     */
+    public static String convertToDefault(String date, String dateFormat, String toFormat) {
+        return createDate(createDateObject(date, dateFormat, false), toFormat, false);
+    }
 }

@@ -40,6 +40,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private OModel syncModel;
     private boolean forceSyncModel = false;
     private HashMap<String, HashSet<Integer>> relationRecordsSyncFinished = new HashMap<>();
+    private ODomain customDomain;
+    private boolean onlySync = false;
 
     public SyncAdapter(Context context, boolean autoInitialize, OModel syncModel) {
         super(context, autoInitialize);
@@ -109,14 +111,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         OdooFields fields = new OdooFields(model.getServerColumns());
         ODomain domain = new ODomain();
 
-        if (syncDomain != null) {
-            domain.append(syncDomain);
-        } else {
-            domain.append(model.syncDomain());
-            // create date
-            if (model.getLastSyncDate() != null) {
-                domain.add("write_date", ">", model.getLastSyncDate());
+        if (customDomain == null || syncResult == null) {
+            if (syncDomain != null) {
+                domain.append(syncDomain);
+            } else {
+                domain.append(model.syncDomain());
+                // create date
+                if (model.getLastSyncDate() != null) {
+                    domain.add("write_date", ">", model.getLastSyncDate());
+                }
             }
+        } else {
+            domain = customDomain;
         }
         OdooResult result = odoo.searchRead(model.getModelName(), fields, domain, offset, limit,
                 "create_date DESC");
@@ -149,23 +155,25 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (syncResult != null)
             syncResult.stats.numUpdates += recordUtils.getRecordValuesToUpdate().size();
 
-        // creating list for relation records to sync
-        if (recordUtils.getRelationRecordToSync().size() > 0) {
-            List<String> relModels = new ArrayList<>(recordUtils.getRelationRecordToSync().keySet());
-            for (String relModel : relModels) {
-                OModel relModelObj = model.createModel(relModel);
-                HashSet<Integer> relModelIds = recordUtils.getRelationRecordToSync().get(relModel);
-                if (relationRecordsSyncFinished.containsKey(relModel)) {
-                    HashSet<Integer> idsDone = relationRecordsSyncFinished.get(relModel);
-                    relModelIds.removeAll(idsDone);
-                }
-                if (!relModelIds.isEmpty()) {
-                    addRelationRecordSynced(relModel, relModelIds);
-                    Log.v(TAG, "Processing relation " + relModelIds.size() + " record(s) for " + relModel
-                            + (syncResult == null ? " of " + model.getModelName() : ""));
-                    ODomain relDomain = new ODomain();
-                    relDomain.add("id", "in", new ArrayList<>(relModelIds));
-                    syncData(relModelObj, relDomain, null);
+        if (!onlySync) {
+            // creating list for relation records to sync
+            if (recordUtils.getRelationRecordToSync().size() > 0) {
+                List<String> relModels = new ArrayList<>(recordUtils.getRelationRecordToSync().keySet());
+                for (String relModel : relModels) {
+                    OModel relModelObj = model.createModel(relModel);
+                    HashSet<Integer> relModelIds = recordUtils.getRelationRecordToSync().get(relModel);
+                    if (relationRecordsSyncFinished.containsKey(relModel)) {
+                        HashSet<Integer> idsDone = relationRecordsSyncFinished.get(relModel);
+                        relModelIds.removeAll(idsDone);
+                    }
+                    if (!relModelIds.isEmpty()) {
+                        addRelationRecordSynced(relModel, relModelIds);
+                        Log.v(TAG, "Processing relation " + relModelIds.size() + " record(s) for " + relModel
+                                + (syncResult == null ? " of " + model.getModelName() : ""));
+                        ODomain relDomain = new ODomain();
+                        relDomain.add("id", "in", new ArrayList<>(relModelIds));
+                        syncData(relModelObj, relDomain, null);
+                    }
                 }
             }
         }
@@ -270,5 +278,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         forceSyncModel = true;
         onPerformSync(user.getAccount(), new Bundle(), syncModel.getAuthority(), null, result);
         return result;
+    }
+
+    public SyncAdapter withDomain(ODomain domain) {
+        customDomain = domain;
+        return this;
+    }
+
+    public void onlySync() {
+        onlySync = true;
     }
 }

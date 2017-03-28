@@ -38,7 +38,7 @@ public class ProjectProvider extends BaseContentProvider {
         ProjectProject projectProject = new ProjectProject(getContext());
 
         // loading personal projects
-        List<ListRow> personalProjects = projectProject.select("team_id is NULL");
+        List<ListRow> personalProjects = projectProject.select("team_id is NULL", null);
         if (!personalProjects.isEmpty()) {
             matrixCursor.addRow(new Object[]{"-99", "-1", "Personal", true, null});
             addProjects(personalProjects, matrixCursor);
@@ -46,7 +46,7 @@ public class ProjectProvider extends BaseContentProvider {
 
         for (ListRow row : teams.select()) {
             matrixCursor.addRow(new Object[]{row.getInt("_id"), row.getInt("id"), row.getString("name"), true, null});
-            addProjects(projectProject.select("team_id = ?", row.getString("_id")), matrixCursor);
+            addProjects(projectProject.select("team_id = ?", new String[]{row.getString("_id")}), matrixCursor);
         }
 
         return new MergeCursor(new Cursor[]{matrixCursor});
