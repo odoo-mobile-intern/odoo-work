@@ -1,23 +1,13 @@
 package com.odoo.work.addons.project.utils;
 
-/**
- * Created by Vedant on 27-03-2017.
- */
+import com.odoo.work.orm.data.ListRow;
 
 public class CardItem {
-    private int mTextResource;
-    private int mTitleResource;
+    public String title;
+    public ListRow data;
 
-    public CardItem(int title, int text) {
-        mTitleResource = title;
-        mTextResource = text;
-    }
-
-    public int getText() {
-        return mTextResource;
-    }
-
-    public int getTitle() {
-        return mTitleResource;
+    public CardItem(String title, ListRow data) {
+        this.title = title;
+        this.data = data;
     }
 }

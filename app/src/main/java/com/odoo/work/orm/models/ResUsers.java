@@ -10,6 +10,7 @@ public class ResUsers extends OModel {
     public static final String TAG = ResUsers.class.getSimpleName();
 
     OColumn name = new OColumn("Name", ColumnType.VARCHAR);
+    OColumn image_medium = new OColumn("Image Medium", ColumnType.BLOB);
 
     public ResUsers(Context context) {
         super(context, "res.users");

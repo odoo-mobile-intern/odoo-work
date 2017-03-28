@@ -92,4 +92,6 @@
     <string name="title_3">Title 3</string>
     <string name="title_4">Title 4</string>
     <string name="text_1">Text 1</string>
+    <string name="label_add_task">Add task</string>
+    <string name="label_add_stage">Add Stage</string>
 </resources>

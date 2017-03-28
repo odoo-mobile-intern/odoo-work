@@ -31,6 +31,7 @@ public class OSyncUtils {
             Bundle settings = new Bundle();
             settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
             settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            settings.putString(SyncAdapter.KEY_SYNC_MODEL, model.getModelName());
             if (data != null)
                 settings.putAll(data);
             ContentResolver.requestSync(accounts[0], model.getAuthority(), settings);
