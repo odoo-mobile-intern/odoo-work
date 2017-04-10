@@ -5,8 +5,10 @@ import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -17,8 +19,6 @@ import com.odoo.core.rpc.helper.OdooFields;
 import com.odoo.core.rpc.helper.utils.gson.OdooRecord;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.support.OUser;
-import com.odoo.work.R;
-import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.orm.OColumn;
 import com.odoo.work.orm.OModel;
 import com.odoo.work.orm.models.LocalRecordState;
@@ -31,6 +31,8 @@ import java.util.List;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TAG = SyncAdapter.class.getSimpleName();
+    public static final String ACTION_SYNC_FINISH = "action_sync_finished";
+    public static final String KEY_SYNC_MODEL = "sync_model";
     private OUser mUser;
     private Odoo odoo;
     private AccountManager accountManager;
@@ -56,50 +58,40 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         mUser = getUser(account);
         try {
             odoo = Odoo.createWithUser(mContext, mUser);
-            if (authority.equals(mContext.getString(R.string.main_authority)) && !forceSyncModel) {
-                // Sync app data with multiple models
-                // fixme
-                syncAppData();
-            } else {
-                if (syncModel != null) {
-                    Log.v(TAG, "Sync started for " + syncModel.getModelName());
-                    syncData(syncModel, null, syncResult);
+            if (syncModel == null && bundle != null && bundle.containsKey(KEY_SYNC_MODEL)) {
+                syncModel = OModel.createInstance(bundle.getString(KEY_SYNC_MODEL), mContext);
+            }
+            if (syncModel != null) {
+                Log.v(TAG, "Sync started for " + syncModel.getModelName());
+                syncData(syncModel, null, syncResult);
 
-                    // Sync finished
-                    syncModel.updateLastSyncDate();
-                    if (syncResult != null) {
-                        if (syncResult.stats.numInserts > 0)
-                            Log.v(TAG, "Inserted " + syncResult.stats.numInserts + " record(s).");
-                        if (syncResult.stats.numUpdates > 0)
-                            Log.v(TAG, "Updated " + syncResult.stats.numUpdates + " record(s).");
-                        if (syncResult.stats.numDeletes > 0)
-                            Log.v(TAG, "Deleted " + syncResult.stats.numDeletes + " record(s) from local.");
-                        if (syncResult.stats.numSkippedEntries > 0)
-                            Log.v(TAG, "Deleted " + syncResult.stats.numSkippedEntries + " record(s) from server.");
+                // Sync finished
+                syncModel.updateLastSyncDate();
+                if (syncResult != null) {
+                    if (syncResult.stats.numInserts > 0)
+                        Log.v(TAG, "Inserted " + syncResult.stats.numInserts + " record(s).");
+                    if (syncResult.stats.numUpdates > 0)
+                        Log.v(TAG, "Updated " + syncResult.stats.numUpdates + " record(s).");
+                    if (syncResult.stats.numDeletes > 0)
+                        Log.v(TAG, "Deleted " + syncResult.stats.numDeletes + " record(s) from local.");
+                    if (syncResult.stats.numSkippedEntries > 0)
+                        Log.v(TAG, "Deleted " + syncResult.stats.numSkippedEntries + " record(s) from server.");
 
-                        Log.v(TAG, "Sync finished for " + syncModel.getModelName());
-                    }
-                } else {
-                    Log.e(TAG, "No model specified for sync service :" + authority);
+                    Log.v(TAG, "Sync finished for " + syncModel.getModelName());
+                    sendSyncFinishBroadcast(syncModel);
                 }
+            } else {
+                Log.e(TAG, "No model specified for sync service :" + authority);
             }
         } catch (OdooVersionException e) {
             e.printStackTrace();
         }
     }
 
-    private void syncAppData() {
-        //todo
-        Log.e(TAG, "App data not synced. Configuration missing");
-        SyncResult syncResult = new SyncResult();
-        syncData(new ProjectTeams(getContext()), null, syncResult);
-        /*
-            Base models:
-               - ir.model.data
-               - res.groups
-               - ir.model.model
-               - ir.model.access
-         */
+    private void sendSyncFinishBroadcast(OModel model) {
+        Intent broadcast = new Intent(ACTION_SYNC_FINISH);
+        broadcast.putExtra(KEY_SYNC_MODEL, model.getModelName());
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(broadcast);
     }
 
     private void syncData(OModel model, ODomain syncDomain, SyncResult syncResult) {

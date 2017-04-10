@@ -308,7 +308,7 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         List<ListRow> rows = new ArrayList<>();
         SQLiteDatabase database = getReadableDatabase();
         args = args != null && args.length > 0 ? args : null;
-        orderBy = orderBy == null ? "_id DESC" : orderBy;
+        orderBy = orderBy == null ? "id " : orderBy;
         Cursor cursor = database.query(getTableName(), projection, where, args, null, null, orderBy);
         if (cursor.moveToFirst()) {
             do {

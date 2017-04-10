@@ -69,6 +69,7 @@
     <string name="label_create">Create</string>
     <string name="toast_project_name_required">Project Name required</string>
     <string name="hint_project_name">Project Name</string>
+    <string name="msg_creating_project">Creating project…</string>
     <string name="label_new_message">New Message</string>
     <string name="label_log_an_internal_note">Log an internal note</string>
     <string name="label_or">OR</string>
@@ -84,7 +85,6 @@
     <string name="label_logging">Logging...</string>
     <string name="toast_note_logged">Note logged</string>
     <string name="toast_not_able_to_log_note">Not able to log note</string>
-    <string name="msg_creating_project">Creating project...</string>
 
     <!--DEmo-->
     <string name="title_1">Title 1</string>
@@ -92,4 +92,6 @@
     <string name="title_3">Title 3</string>
     <string name="title_4">Title 4</string>
     <string name="text_1">Text 1</string>
+    <string name="label_add_task">Add task</string>
+    <string name="label_add_stage">Add Stage</string>
 </resources>

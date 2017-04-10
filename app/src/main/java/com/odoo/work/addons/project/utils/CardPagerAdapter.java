@@ -5,7 +5,9 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.odoo.work.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
     public int getCount() {
         return mData.size();
     }
+
     @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
@@ -40,14 +43,21 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View view = LayoutInflater.from(container.getContext())
-                .inflate(R.layout.fragment_adapter, container, false);
+        View view = getView(container, position, getItem(position));
         container.addView(view);
         bind(mData.get(position), view);
         CardView cardView = (CardView) view.findViewById(R.id.cardView);
-
         mViews.set(position, cardView);
         return view;
+    }
+
+    public View getView(ViewGroup container, int position, CardItem item) {
+        return LayoutInflater.from(container.getContext())
+                .inflate(R.layout.fragment_adapter, container, false);
+    }
+
+    public CardItem getItem(int position) {
+        return mData.get(position);
     }
 
     @Override
@@ -56,11 +66,7 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
         mViews.set(position, null);
     }
 
-    private void bind(CardItem item, View view) {
-//        TextView titleTextView = (TextView) view.findViewById(R.id.titleTextView);
-//        TextView contentTextView = (TextView) view.findViewById(R.id.contentTextView);
-//        titleTextView.setText(item.getTitle());
-//        contentTextView.setText(item.getText());
+    public void bind(CardItem item, View view) {
     }
 
 }
