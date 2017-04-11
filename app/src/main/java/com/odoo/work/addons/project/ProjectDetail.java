@@ -1,5 +1,6 @@
 package com.odoo.work.addons.project;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
         extra = getIntent().getExtras();
         projectProject = new ProjectProject(this);
         projectTask = new ProjectTask(this);
+
         projectData = projectProject.browse(extra.getInt(KEY_PROJECT_ID));
         setTitle(projectData.getString("name"));
 
@@ -70,12 +72,13 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
             }
 
             @Override
-            public void bind(CardItem item, View view) {
+            public void bind(final CardItem item, View view) {
                 CBind.setText((TextView) view.findViewById(R.id.stageName), item.title);
                 if (item.data != null) {
                     OListAdapter adapter = getAdapter(view, item.data);
                     adapters.put("adapter_" + item.data.getInt("_id"), adapter);
                     getSupportLoaderManager().initLoader(item.data.getInt("_id"), null, ProjectDetail.this);
+
                 }
             }
         };
@@ -94,16 +97,24 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
         viewPager.setOffscreenPageLimit(3);
     }
 
-    private OListAdapter getAdapter(View view, ListRow stage) {
+    private OListAdapter getAdapter(View view, final ListRow stage) {
         GridView gridView = (GridView) view.findViewById(R.id.pagerGridView);
-        OListAdapter adapter = new OListAdapter(ProjectDetail.this, null, R.layout.project_task_card_view) {
+        final OListAdapter adapter = new OListAdapter(ProjectDetail.this, null, R.layout.project_task_card_view) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(final int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
                     convertView = LayoutInflater.from(ProjectDetail.this).inflate(R.layout.project_task_card_view, parent, false);
                 }
-                ListRow row = new ListRow(projectProject, (Cursor) getItem(position));
+                final ListRow row = new ListRow(projectProject, (Cursor) getItem(position));
                 CBind.setText((TextView) convertView.findViewById(R.id.taskTitle), row.getString("name"));
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(ProjectDetail.this,TaskDetailScroll.class);
+                        intent.putExtra("id",row.getString("_id"));
+                        startActivity(intent);
+                    }
+                });
                 switch (row.getString("kanban_state")) {
                     case "normal":
                         convertView.findViewById(R.id.kanban_state).setBackgroundColor(Color.parseColor("#AEAEAE"));
@@ -137,7 +148,9 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
 
                 return convertView;
             }
+
         };
+
         gridView.setAdapter(adapter);
         return adapter;
     }
