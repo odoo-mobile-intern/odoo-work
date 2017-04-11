@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.odoo.work.R;
 import com.odoo.work.addons.project.models.ProjectProject;
@@ -78,7 +79,20 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
                     OListAdapter adapter = getAdapter(view, item.data);
                     adapters.put("adapter_" + item.data.getInt("_id"), adapter);
                     getSupportLoaderManager().initLoader(item.data.getInt("_id"), null, ProjectDetail.this);
-
+                    view.findViewById(R.id.addNewTask).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(ProjectDetail.this, "Add new task", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    View newState = (View) view.findViewById(R.id.stageName).getParent();
+                    newState.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(ProjectDetail.this, "Add new state", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         };
@@ -87,6 +101,8 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
             stages.put("stage_" + stage.getInt("_id"), stage);
         }
         mCardAdapter.addCardItem(new CardItem(getString(R.string.label_add_stage), null));
+//        mCardAdapter.getItem(mCardAdapter.getCount() - 1).title
+
         mFragmentCardAdapter = new CardFragmentPagerAdapter(getSupportFragmentManager());
 
         mCardShadowTransformer = new ShadowTransformer(viewPager, mCardAdapter);
@@ -110,8 +126,8 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(ProjectDetail.this,TaskDetailScroll.class);
-                        intent.putExtra("id",row.getString("_id"));
+                        Intent intent = new Intent(ProjectDetail.this, TaskDetailScroll.class);
+                        intent.putExtra("id", row.getString("_id"));
                         startActivity(intent);
                     }
                 });
@@ -145,16 +161,13 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
                     toggle.setImageResource(R.drawable.ic_star_filled);
                     toggle.setColorFilter(Color.parseColor("#FFD700"));
                 }
-
                 return convertView;
             }
-
         };
 
         gridView.setAdapter(adapter);
         return adapter;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
