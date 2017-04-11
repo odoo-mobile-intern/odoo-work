@@ -1,5 +1,6 @@
 package com.odoo.work.addons.project;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -8,15 +9,25 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.odoo.core.rpc.Odoo;
+import com.odoo.core.rpc.handler.OdooVersionException;
+import com.odoo.core.rpc.helper.ORecordValues;
+import com.odoo.core.rpc.helper.utils.gson.OdooResult;
+import com.odoo.core.rpc.listeners.OdooResponse;
+import com.odoo.core.support.OUser;
 import com.odoo.work.R;
 import com.odoo.work.addons.project.models.ProjectProject;
 import com.odoo.work.addons.project.models.ProjectTask;
@@ -31,7 +42,10 @@ import com.odoo.work.utils.BitmapUtils;
 import com.odoo.work.utils.CBind;
 import com.odoo.work.utils.OAppBarUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -86,23 +100,33 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
                         }
                     });
                 } else {
-                    View newState = (View) view.findViewById(R.id.stageName).getParent();
+                    final View newState = (View) view.findViewById(R.id.stageName).getParent();
                     newState.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view) {
-                            Toast.makeText(ProjectDetail.this, "Add new state", Toast.LENGTH_SHORT).show();
+                        public void onClick(final View view) {
+                            final EditText addStage = new EditText(ProjectDetail.this);
+                            addStage.setHint("New stage name");
+                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.MATCH_PARENT);
+                            addStage.setLayoutParams(lp);
+                            AlertDialog.Builder addStageBuilder = new AlertDialog.Builder(ProjectDetail.this);
+                            addStageBuilder.setView(addStage, 100, 30, 100, 30);
+                            addStageBuilder.setPositiveButton(R.string.label_add, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    createNewStage(addStage.getText().toString().trim());
+                                }
+                            });
+                            addStageBuilder.setNegativeButton(R.string.label_cancel, null);
+                            addStageBuilder.show();
                         }
                     });
                 }
             }
         };
-        for (ListRow stage : projectData.getM2M("type_ids")) {
-            mCardAdapter.addCardItem(new CardItem(stage.getString("name"), stage));
-            stages.put("stage_" + stage.getInt("_id"), stage);
-        }
+        bindStages();
         mCardAdapter.addCardItem(new CardItem(getString(R.string.label_add_stage), null));
-//        mCardAdapter.getItem(mCardAdapter.getCount() - 1).title
-
         mFragmentCardAdapter = new CardFragmentPagerAdapter(getSupportFragmentManager());
 
         mCardShadowTransformer = new ShadowTransformer(viewPager, mCardAdapter);
@@ -111,6 +135,33 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
         viewPager.setAdapter(mCardAdapter);
         viewPager.setPageTransformer(false, mCardShadowTransformer);
         viewPager.setOffscreenPageLimit(3);
+    }
+
+    private void bindStages() {
+        for (ListRow stage : projectData.getM2M("type_ids")) {
+            mCardAdapter.addCardItem(new CardItem(stage.getString("name"), stage));
+            stages.put("stage_" + stage.getInt("_id"), stage);
+        }
+    }
+
+    private void createNewStage(final String stageName) {
+        if (!stageName.equals("")) {
+            OUser user = OUser.current(this);
+            try {
+                Odoo odoo = Odoo.createWithUser(this, user);
+                ORecordValues values = new ORecordValues();
+                values.put("name", stageName);
+                values.put("project_ids", Arrays.asList(Arrays.asList(6, false, Arrays.asList(extra.getInt(KEY_PROJECT_ID)))));
+                odoo.createRecord("project.task.type", values, new OdooResponse() {
+                    @Override
+                    public void onResponse(OdooResult response) {
+                        Toast.makeText(ProjectDetail.this, "new stage added", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (OdooVersionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private OListAdapter getAdapter(View view, final ListRow stage) {
