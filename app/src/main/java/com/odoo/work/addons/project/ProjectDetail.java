@@ -127,6 +127,7 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(ProjectDetail.this, TaskDetailScroll.class);
+                        intent.putExtra("prj_id",extra.getInt(KEY_PROJECT_ID));
                         intent.putExtra("id", row.getString("_id"));
                         startActivity(intent);
                     }

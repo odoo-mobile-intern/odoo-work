@@ -35,4 +35,6 @@ public class CBind {
             ((EditText) view).setText(value);
         }
     }
+
+
 }
