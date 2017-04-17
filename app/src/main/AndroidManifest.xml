@@ -125,5 +125,4 @@
         <activity android:name=".addons.project.TaskDetailScroll"/>
 
     </application>
-
 </manifest>

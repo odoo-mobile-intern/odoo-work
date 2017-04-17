@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import com.odoo.core.support.OUser;
 import com.odoo.work.R;
 import com.odoo.work.addons.project.models.ProjectProject;
 import com.odoo.work.addons.project.models.ProjectTask;
+import com.odoo.work.addons.project.models.ProjectTaskType;
 import com.odoo.work.addons.project.utils.CardFragmentPagerAdapter;
 import com.odoo.work.addons.project.utils.CardItem;
 import com.odoo.work.addons.project.utils.CardPagerAdapter;
@@ -38,14 +40,13 @@ import com.odoo.work.addons.project.utils.ShadowTransformer;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.orm.OListAdapter;
 import com.odoo.work.orm.data.ListRow;
+import com.odoo.work.orm.sync.OSyncUtils;
 import com.odoo.work.utils.BitmapUtils;
 import com.odoo.work.utils.CBind;
 import com.odoo.work.utils.OAppBarUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -60,6 +61,7 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
     private ProjectProject projectProject;
     private ProjectTask projectTask;
     private ListRow projectData;
+    private ProjectTaskType taskStages;
 
     private HashMap<String, ListRow> stages = new HashMap<>();
     private HashMap<String, OListAdapter> adapters = new HashMap<>();
@@ -69,9 +71,14 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.project_detail);
         OAppBarUtils.setHasAppBar(this, true);
+        init();
+    }
+
+    private void init() {
         extra = getIntent().getExtras();
         projectProject = new ProjectProject(this);
         projectTask = new ProjectTask(this);
+        taskStages = new ProjectTaskType(this);
 
         projectData = projectProject.browse(extra.getInt(KEY_PROJECT_ID));
         setTitle(projectData.getString("name"));
@@ -96,7 +103,22 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
                     view.findViewById(R.id.addNewTask).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(ProjectDetail.this, "Add new task", Toast.LENGTH_SHORT).show();
+                            final EditText createTask = new EditText(ProjectDetail.this);
+                            createTask.setHint("New Task");
+                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.MATCH_PARENT);
+                            createTask.setLayoutParams(lp);
+                            AlertDialog.Builder addStageBuilder = new AlertDialog.Builder(ProjectDetail.this);
+                            addStageBuilder.setView(createTask, 100, 30, 100, 30);
+                            addStageBuilder.setPositiveButton(R.string.label_create, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    createNewTask(item.data.getInt("_id"), createTask.getText().toString().trim());
+                                }
+                            });
+                            addStageBuilder.setNegativeButton(R.string.label_cancel, null);
+                            addStageBuilder.show();
                         }
                     });
                 } else {
@@ -164,6 +186,28 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
         }
     }
 
+    private void createNewTask(int stage_id, String taskTitle) {
+        if (!taskTitle.equals("")) {
+            OUser user = OUser.current(this);
+            try {
+                Odoo odoo = Odoo.createWithUser(this, user);
+                ORecordValues values = new ORecordValues();
+                values.put("name", taskTitle);
+                values.put("stage_id", taskStages.getServerId(stage_id));
+                values.put("project_id", extra.getInt(KEY_PROJECT_ID));
+
+                odoo.createRecord("project.task", values, new OdooResponse() {
+                    @Override
+                    public void onResponse(OdooResult response) {
+                        Toast.makeText(ProjectDetail.this, "New task created", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (OdooVersionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private OListAdapter getAdapter(View view, final ListRow stage) {
         GridView gridView = (GridView) view.findViewById(R.id.pagerGridView);
         final OListAdapter adapter = new OListAdapter(ProjectDetail.this, null, R.layout.project_task_card_view) {
@@ -178,7 +222,7 @@ public class ProjectDetail extends OdooActivity implements LoaderManager.LoaderC
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(ProjectDetail.this, TaskDetailScroll.class);
-                        intent.putExtra("prj_id",extra.getInt(KEY_PROJECT_ID));
+                        intent.putExtra("prj_id", extra.getInt(KEY_PROJECT_ID));
                         intent.putExtra("id", row.getString("_id"));
                         startActivity(intent);
                     }

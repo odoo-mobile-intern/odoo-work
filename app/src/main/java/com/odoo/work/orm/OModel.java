@@ -474,4 +474,8 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         adapter.onPerformSync(getUser().getAccount(), new Bundle(), getAuthority(), null, new SyncResult());
     }
 
+    public int getServerId(int localId) {
+        ListRow row = browse(localId);
+        return row != null ? row.getInt("id") : -1;
+    }
 }

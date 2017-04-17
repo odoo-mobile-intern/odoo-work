@@ -1,5 +1,6 @@
 package com.odoo.work.addons.project;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,11 +22,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.odoo.work.R;
-import com.odoo.work.addons.project.models.ProjectProject;
 import com.odoo.work.addons.project.models.ProjectTask;
-import com.odoo.work.addons.project.models.ProjectTaskType;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.orm.data.ListRow;
 import com.odoo.work.utils.BitmapUtils;
@@ -38,14 +37,11 @@ import java.util.List;
 public class TaskDetailScroll extends OdooActivity implements View.OnClickListener {
 
     private static final java.lang.String KEY_TASK_ID = "id";
-    private ProjectProject projectProject;
     private ProjectTask projectTask;
-    private Bundle extra;
     private ListRow projectData;
     private EditText taskDesc, taskTitleName;
-    private ImageView taskUser;
     private Menu menu;
-    public String tempID;
+    private Bundle extra;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -55,14 +51,13 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         taskDesc = (EditText) findViewById(R.id.taskDesc);
         taskTitleName = (EditText) findViewById(R.id.taskTitleName);
-        taskUser = (ImageView) findViewById(R.id.taskUser);
+        ImageView taskUser = (ImageView) findViewById(R.id.taskUser);
         CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
         extra = getIntent().getExtras();
 
-        projectProject = new ProjectProject(this);
         projectTask = new ProjectTask(this);
         projectData = projectTask.browse(Integer.parseInt(extra.getString(KEY_TASK_ID)));
         CBind.setText((TextView) findViewById(R.id.taskTitleName), projectData.getString("name"));
@@ -72,35 +67,28 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
             } else {
                 CBind.setText(taskDesc, Html.fromHtml(projectData.getString("description")).toString());
             }
-        } else {
-            taskDesc.setHint("Edit task description...");
-        }
+        } else taskDesc.setHint(R.string.hint_task_description);
 
         disableEditText(taskDesc);
         disableEditText(taskTitleName);
-
         CBind.setText((TextView) findViewById(R.id.taskUserName), projectData.getM2O("user_id").getString("name"));
-
 
         if (projectData.getM2O("user_id").getString("image_medium").equals("false")) {
             Bitmap image = BitmapFactory.decodeResource(getResources(),
                     R.drawable.user_profile);
             image = Bitmap.createScaledBitmap(image, 150, 150, true);
             taskUser.setImageBitmap(image);
-
-
-        } else {
+        } else
             CBind.setImage(taskUser, BitmapUtils.getBitmapImage(this, projectData.getM2O("user_id").getString("image_medium")));
-        }
+
         CBind.setText((TextView) findViewById(R.id.taskProject), projectData.getM2O("project_id").getString("name"));
         CBind.setText((TextView) findViewById(R.id.taskStage), projectData.getM2O("stage_id").getString("name"));
         findViewById(R.id.projectTaskLayout).setOnClickListener(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (Integer.parseInt(projectData.getString("priority")) == 0) {
             fab.setImageResource(R.drawable.ic_star_border);
-        } else {
-            fab.setImageResource(R.drawable.ic_star_filled);
-        }
+        } else fab.setImageResource(R.drawable.ic_star_filled);
+
         switch (projectData.getString("kanban_state")) {
             case "normal": {
                 findViewById(R.id.taskKanban).setBackgroundColor(Color.parseColor("#AEAEAE"));
@@ -188,8 +176,6 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
                 });
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.show();
-
-
     }
 
 
@@ -198,7 +184,6 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
         editText.setOnClickListener(this);
         editText.setCursorVisible(false);
         editText.setBackgroundColor(Color.TRANSPARENT);
-
     }
 
     public void enableEditText(EditText editText) {
@@ -211,7 +196,7 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_task_save, menu);
-        menu.findItem(R.id.action_save).setVisible(false).getIcon().setTint(Color.WHITE);
+        menu.findItem(R.id.action_save).setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -220,6 +205,17 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.action_save:
+                if (!taskTitleName.getText().toString().trim().isEmpty()) {
+                    ContentValues values = new ContentValues();
+                    values.put("description", taskDesc.getText().toString().trim());
+                    values.put("name", taskTitleName.getText().toString().trim());
+                    projectTask.update(values, "_id = ?", extra.getString(KEY_TASK_ID));
+                    finish();
+                } else
+                    Toast.makeText(this, R.string.toast_task_title_required, Toast.LENGTH_SHORT).show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

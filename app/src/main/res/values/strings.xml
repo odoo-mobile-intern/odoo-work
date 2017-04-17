@@ -191,4 +191,6 @@
     <string name="title_project_name">Project</string>
     <string name="label_stage_name">Stage</string>
     <string name="label_project_name">Project</string>
+    <string name="toast_task_title_required">Task title required</string>
+    <string name="hint_task_description">Edit task description</string>
 </resources>
