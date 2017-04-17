@@ -14,6 +14,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -150,7 +151,7 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
         final List<ListRow> stageName = projectTask.select("project_id = ? ", new String[]{projectData.getM2O("project_id").getString("_id")});
 
         for (ListRow row : stageName) {
-            if (row != null) {
+            if (row != null && row.getM2O("stage_id") != null) {
                 if (!stages.contains(row.getM2O("stage_id").getString("name")))
                     stages.add(row.getM2O("stage_id").getString("name"));
             }
@@ -212,5 +213,14 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
         getMenuInflater().inflate(R.menu.menu_task_save, menu);
         menu.findItem(R.id.action_save).setVisible(false).getIcon().setTint(Color.WHITE);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
