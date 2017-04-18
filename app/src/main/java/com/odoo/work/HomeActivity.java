@@ -16,6 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -28,7 +29,10 @@ import com.odoo.core.rpc.handler.OdooVersionException;
 import com.odoo.core.rpc.helper.ORecordValues;
 import com.odoo.core.rpc.helper.utils.gson.OdooResult;
 import com.odoo.core.support.OUser;
+import com.odoo.work.addons.project.ProjectDetail;
 import com.odoo.work.addons.project.models.ProjectProject;
+import com.odoo.work.addons.project.models.ProjectTask;
+import com.odoo.work.addons.project.models.ProjectTaskType;
 import com.odoo.work.addons.teams.TeamDetailView;
 import com.odoo.work.addons.teams.models.ProjectTeams;
 import com.odoo.work.core.support.OdooActivity;
@@ -41,7 +45,7 @@ import com.odoo.work.utils.OAppBarUtils;
 import java.util.List;
 
 public class HomeActivity extends OdooActivity implements OListAdapter.OnNewViewInflateListener, OListAdapter.OnViewBindInflateListener,
-        LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+        LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, AdapterView.OnItemClickListener {
 
     private ProjectTeams projectTeams;
     private ProjectProject projectProject;
@@ -67,6 +71,7 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
         projectTeams = new ProjectTeams(this);
         projectProject = new ProjectProject(this);
         ListView teamsWithProjects = (ListView) findViewById(R.id.teamsWithProjects);
+        teamsWithProjects.setOnItemClickListener(this);
         adapter = new OListAdapter(this, null, R.layout.dashboard_item_view);
         adapter.setNewViewInflateListener(this);
         adapter.setViewBindInflateListener(this);
@@ -90,18 +95,12 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
         if (!row.getBoolean("is_team")) {
             view.findViewById(R.id.projectColor)
                     .setBackgroundColor(Color.parseColor(ProjectProject.COLORS[row.getInt("color")]));
+
+
         } else if (view.findViewById(R.id.teamDetailView) != null) {
             view.findViewById(R.id.teamDetailView).setVisibility((row.getInt("_id") == -99) ? View.GONE : View.VISIBLE);
-            view.findViewById(R.id.teamDetailView).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent detailView = new Intent(HomeActivity.this, TeamDetailView.class);
-                    detailView.putExtra(TeamDetailView.KEY_TEAM_ID, row.getInt(BaseColumns._ID));
-                    startActivity(detailView);
-                }
-            });
-        }
 
+        }
     }
 
     @Override
@@ -124,7 +123,16 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
         super.onResume();
         OSyncUtils.get(this, projectProject).sync(new Bundle());
         OSyncUtils.get(this, new ProjectTeams(this)).sync(new Bundle());
+        OSyncUtils.get(this, new ProjectTaskType(this)).sync(new Bundle());
+        OSyncUtils.get(this, new ProjectTask(this)).sync(new Bundle());
         getSupportLoaderManager().restartLoader(0, null, this);
+
+        OSyncUtils.onSyncFinishListener(this, new OSyncUtils.OnSyncFinishListener() {
+            @Override
+            public void onSyncFinish(String model) {
+                getSupportLoaderManager().restartLoader(0, null, HomeActivity.this);
+            }
+        });
     }
 
     @Override
@@ -216,5 +224,21 @@ public class HomeActivity extends OdooActivity implements OListAdapter.OnNewView
                 getSupportLoaderManager().restartLoader(0, null, HomeActivity.this);
             }
         }.execute();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        ListRow item = new ListRow((Cursor) adapter.getItem(i));
+        if (!item.getBoolean("is_team")) {
+            Intent projectDetailView = new Intent(this, ProjectDetail.class);
+            projectDetailView.putExtra(ProjectDetail.KEY_PROJECT_ID, item.getInt("_id"));
+            startActivity(projectDetailView);
+        }
+        else
+        { Intent detailView = new Intent(HomeActivity.this, TeamDetailView.class);
+            detailView.putExtra(TeamDetailView.KEY_TEAM_ID, item.getInt(BaseColumns._ID));
+            startActivity(detailView);
+
+        }
     }
 }

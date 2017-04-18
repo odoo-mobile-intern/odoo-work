@@ -61,7 +61,7 @@
             android:label="@string/label_app_data"
             android:syncable="true" />
 
-        <!--Partner sync service and provider-->
+        <!-- Partner sync service and provider -->
         <service
             android:name=".addons.customer.service.ResPartnerService"
             android:exported="true"
@@ -69,6 +69,7 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/partner_sync_adapter" />
@@ -81,7 +82,7 @@
             android:label="@string/partner_sync"
             android:syncable="true" />
 
-        <!--Project sync service and provider-->
+        <!-- Project sync service and provider -->
         <service
             android:name=".addons.project.service.ProjectService"
             android:exported="true"
@@ -89,6 +90,7 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/project_sync_adapter" />
@@ -110,7 +112,7 @@
             android:theme="@style/AppTheme.ActionBar" />
         <activity android:name=".SelectMembers" />
 
-        <!--FCM Services-->
+        <!-- FCM Services -->
         <service android:name=".addons.fcm.services.OdooWorkFCMService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -119,7 +121,8 @@
 
         <activity android:name=".addons.teams.InvitationAccept" />
         <activity android:name=".addons.teams.TeamDetailView" />
-
+        <activity android:name=".addons.project.ProjectDetail" />
+        <activity android:name=".addons.project.TaskDetailScroll"/>
 
     </application>
 </manifest>

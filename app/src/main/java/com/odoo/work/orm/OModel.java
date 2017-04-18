@@ -238,6 +238,11 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         return rows.isEmpty() ? null : rows.get(0);
     }
 
+    public ListRow browse(String name) {
+        List<ListRow> rows = select("name = ?", new String[]{name});
+        return rows.isEmpty() ? null : rows.get(0);
+    }
+
     public List<ListRow> select() {
         return select(null, null);
     }
@@ -308,7 +313,7 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         List<ListRow> rows = new ArrayList<>();
         SQLiteDatabase database = getReadableDatabase();
         args = args != null && args.length > 0 ? args : null;
-        orderBy = orderBy == null ? "_id DESC" : orderBy;
+        orderBy = orderBy == null ? "id " : orderBy;
         Cursor cursor = database.query(getTableName(), projection, where, args, null, null, orderBy);
         if (cursor.moveToFirst()) {
             do {
@@ -474,4 +479,13 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         adapter.onPerformSync(getUser().getAccount(), new Bundle(), getAuthority(), null, new SyncResult());
     }
 
+    public int getServerId(int localId) {
+        ListRow row = browse(localId);
+        return row != null ? row.getInt("id") : -1;
+    }
+
+    public int getServerId(String stageName) {
+        ListRow row = browse(stageName);
+        return row != null ? row.getInt("id") : -1;
+    }
 }

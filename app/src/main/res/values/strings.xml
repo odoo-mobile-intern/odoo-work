@@ -85,4 +85,19 @@
     <string name="label_logging">Logging...</string>
     <string name="toast_note_logged">Note logged</string>
     <string name="toast_not_able_to_log_note">Not able to log note</string>
+
+    <!--DEmo-->
+    <string name="label_add_task">Add task</string>
+    <string name="label_add_stage">Add Stage</string>
+    <string name="title_activity_task_detail_scroll">TaskDetailScroll</string>
+    <string name="action_settings">Settings</string>
+    <string name="label_add">Add</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="title_move_task">Move Task</string>
+    <string name="title_project_name">Project</string>
+    <string name="label_stage_name">Stage</string>
+    <string name="label_project_name">Project</string>
+    <string name="toast_task_title_required">Task title required</string>
+    <string name="hint_task_description">Edit task description</string>
+    <string name="label_move">Move</string>
 </resources>

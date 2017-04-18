@@ -33,6 +33,11 @@ public class ProjectProject extends OModel {
     OColumn team_id = new OColumn("Team id", ColumnType.MANY2ONE, "project.teams");
     OColumn color = new OColumn("Color", ColumnType.INTEGER).setDefaultValue(0);
 
+    OColumn type_ids = new OColumn("Task Stages", ColumnType.MANY2MANY, "project.task.type")
+            .setRelTableName("project_task_type_rel")
+            .setBaseColumn("project_id")
+            .setRelColumn("type_id");
+
     public ProjectProject(Context context) {
         super(context, "project.project");
         mContext = context;
