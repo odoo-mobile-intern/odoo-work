@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,8 +25,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.odoo.core.rpc.Odoo;
+import com.odoo.core.rpc.handler.OdooVersionException;
+import com.odoo.core.rpc.helper.ORecordValues;
+import com.odoo.core.rpc.helper.utils.gson.OdooResult;
+import com.odoo.core.rpc.listeners.OdooResponse;
+import com.odoo.core.support.OUser;
 import com.odoo.work.R;
 import com.odoo.work.addons.project.models.ProjectTask;
+import com.odoo.work.addons.project.models.ProjectTaskType;
 import com.odoo.work.core.support.OdooActivity;
 import com.odoo.work.orm.data.ListRow;
 import com.odoo.work.utils.BitmapUtils;
@@ -38,6 +46,7 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
 
     private static final java.lang.String KEY_TASK_ID = "id";
     private ProjectTask projectTask;
+    private ProjectTaskType stageType;
     private ListRow projectData;
     private EditText taskDesc, taskTitleName;
     private Menu menu;
@@ -59,6 +68,7 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
         extra = getIntent().getExtras();
 
         projectTask = new ProjectTask(this);
+        stageType = new ProjectTaskType(this);
         projectData = projectTask.browse(Integer.parseInt(extra.getString(KEY_TASK_ID)));
         CBind.setText((TextView) findViewById(R.id.taskTitleName), projectData.getString("name"));
         if (!projectData.getString("description").equals("false")) {
@@ -135,6 +145,7 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
     private void alertBoxEnable() {
         final View promptsView = LayoutInflater.from(this).inflate(R.layout.move_project_task, null);
         final Spinner taskSpinner = (Spinner) promptsView.findViewById(R.id.project_stage);
+        final TextView textStageName = (TextView) promptsView.findViewById(R.id.textStageName);
         final ArrayList<String> stages = new ArrayList<>();
         final List<ListRow> stageName = projectTask.select("project_id = ? ", new String[]{projectData.getM2O("project_id").getString("_id")});
 
@@ -144,17 +155,10 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
                     stages.add(row.getM2O("stage_id").getString("name"));
             }
         }
-        ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stages) {
+        final ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stages) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 convertView = super.getView(position, convertView, parent);
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
-                });
-                CBind.setText((TextView) convertView, stages.get(position));
                 return convertView;
             }
 
@@ -164,20 +168,53 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
             }
         };
         taskSpinner.setAdapter(dataAdapter1);
+        taskSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                String str = dataAdapter1.getItem(position);
+                CBind.setText(textStageName, str);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(R.string.title_move_task);
         alertDialog.setView(promptsView);
         alertDialog.setCancelable(false);
-        alertDialog.setPositiveButton(R.string.label_create,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                });
+        alertDialog.setPositiveButton(R.string.label_move, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                moveTask(textStageName.getText().toString().trim());
+            }
+        });
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.show();
     }
 
+    private void moveTask(final String stageName) {
+        try {
+            int task_id = projectTask.getServerId(Integer.parseInt(extra.getString(KEY_TASK_ID)));
+            int stage_id = stageType.getServerId(stageName);
+
+            Odoo odoo = Odoo.createWithUser(this, OUser.current(this));
+            ORecordValues values = new ORecordValues();
+            values.put("stage_id", stage_id);
+
+            odoo.updateRecord("project.task", values, task_id, new OdooResponse() {
+                @Override
+                public void onResponse(OdooResult response) {
+                    CBind.setText((TextView) findViewById(R.id.taskStage), stageName);
+                    Toast.makeText(TaskDetailScroll.this, "Task moved to " + stageName,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (OdooVersionException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void disableEditText(EditText editText) {
         editText.setFocusable(false);
@@ -219,4 +256,5 @@ public class TaskDetailScroll extends OdooActivity implements View.OnClickListen
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

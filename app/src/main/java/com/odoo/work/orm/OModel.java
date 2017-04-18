@@ -238,6 +238,11 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
         return rows.isEmpty() ? null : rows.get(0);
     }
 
+    public ListRow browse(String name) {
+        List<ListRow> rows = select("name = ?", new String[]{name});
+        return rows.isEmpty() ? null : rows.get(0);
+    }
+
     public List<ListRow> select() {
         return select(null, null);
     }
@@ -476,6 +481,11 @@ public class OModel extends SQLiteOpenHelper implements BaseColumns {
 
     public int getServerId(int localId) {
         ListRow row = browse(localId);
+        return row != null ? row.getInt("id") : -1;
+    }
+
+    public int getServerId(String stageName) {
+        ListRow row = browse(stageName);
         return row != null ? row.getInt("id") : -1;
     }
 }

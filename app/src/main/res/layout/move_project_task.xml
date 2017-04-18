@@ -9,6 +9,7 @@
 
     <TextView
         android:text="@string/label_stage_name"
+        android:id="@+id/textStageName"
         android:layout_width="match_parent"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_height="wrap_content"
